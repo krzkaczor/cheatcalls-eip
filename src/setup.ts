@@ -34,7 +34,7 @@ export async function setupTestingEnvironment() {
     publicClient,
     walletClient,
     sender,
-    async [Symbol.dispose]() {
+    async [Symbol.asyncDispose]() {
       await anvil.stop()
     },
   }

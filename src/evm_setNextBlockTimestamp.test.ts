@@ -4,7 +4,7 @@ import { setupTestingEnvironment } from './setup'
 
 describe('evm_setNextBlockTimestamp', () => {
   it('should set the next block timestamp', async () => {
-    using env = await setupTestingEnvironment()
+    await using env = await setupTestingEnvironment()
 
     const bn = await env.publicClient.getBlockNumber()
     strictEqual(bn, 0n) // the first block is 1

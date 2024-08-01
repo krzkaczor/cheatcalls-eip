@@ -11,8 +11,8 @@
     "check:fix": "biome check --write --unsafe .",
     "verify": "concurrently --names \"LINT,TEST,TYPECHECK\" -c \"bgMagenta.bold,bgGreen.bold,bgBlue.bold\" \"pnpm run lint\" \"pnpm run test\" \"pnpm run typecheck\"",
     "lint": "eslint src",
-    "test": "node --import tsx --test --test-reporter spec \"**/*.test.ts\"",
-    "test:only": "node --import tsx --test --test-reporter spec --test-only \"**/*.test.ts\"",
+    "test": "node --env-file .env --import tsx --test --test-reporter spec \"**/*.test.ts\"",
+    "test:only": "node --env-file .env --import tsx --test --test-reporter spec --test-only \"**/*.test.ts\"",
     "typecheck": "tsc --noEmit",
     "fix": "pnpm run check:fix && pnpm run verify"
   },

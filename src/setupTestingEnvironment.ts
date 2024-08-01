@@ -3,6 +3,7 @@ import { http, createPublicClient, createTestClient, createWalletClient } from '
 import { privateKeyToAccount } from 'viem/accounts'
 import { foundry } from 'viem/chains'
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export async function setupTestingEnvironment() {
   const anvil = createAnvil({ timestamp: 100 })
 

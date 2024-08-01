@@ -1,6 +1,6 @@
 import { strictEqual } from 'node:assert'
 import { describe, it } from 'node:test'
-import { setupTestingEnvironment } from './setup'
+import { setupTestingEnvironment } from './setupTestingEnvironment'
 
 describe('evm_setNextBlockTimestamp', () => {
   it('should set the next block timestamp', async () => {

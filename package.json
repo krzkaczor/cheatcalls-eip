@@ -1,0 +1,32 @@
+{
+  "name": "edi-tests",
+  "version": "1.0.0",
+  "private": "true",
+  "engines": {
+    "node": ">=22.5.0",
+    "pnpm": ">=9.0.0"
+  },
+  "scripts": {
+    "check": "biome check .",
+    "check:fix": "biome check --write --unsafe .",
+    "verify": "concurrently --names \"LINT,TEST,TYPECHECK\" -c \"bgMagenta.bold,bgGreen.bold,bgBlue.bold\" \"pnpm run lint\" \"pnpm run test\" \"pnpm run typecheck\"",
+    "test": "node --import tsx --test --test-reporter spec \"**/*.test.ts\"",
+    "test:only": "node --import tsx --test --test-reporter spec --test-only \"**/*.test.ts\"",
+    "typecheck": "tsc --noEmit",
+    "fix": "pnpm run check:fix && pnpm run verify"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.8.3",
+    "@eslint/js": "^9.8.0",
+    "@types/node": "^22.0.0",
+    "concurrently": "^8.2.2",
+    "eslint": "^9.8.0",
+    "tsx": "^4.16.2",
+    "typescript": "^5.5.4",
+    "typescript-eslint": "8.0.0-alpha.58"
+  },
+  "dependencies": {
+    "@viem/anvil": "^0.0.10",
+    "viem": "^2.18.6"
+  }
+}

@@ -4,7 +4,7 @@ on:
   pull_request:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   test:
@@ -22,8 +22,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
-          cache: "pnpm"
+          cache-dependency-path: ./spec-tests/pnpm-lock.yaml
+          cache: pnpm
+      - name: Install anvil
+        uses: foundry-rs/foundry-toolchain@v1
+
       - run: pnpm install
+        working-directory: spec-tests
 
       - run: pnpm check
+        working-directory: spec-tests
       - run: pnpm verify # does linting, type checking, and tests in parallel
+        working-directory: spec-tests
+        env:
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}

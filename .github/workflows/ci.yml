@@ -24,6 +24,9 @@ jobs:
           node-version: ${{ matrix.node }}
           cache-dependency-path: ./spec-tests/pnpm-lock.yaml
           cache: pnpm
+      - name: Install anvil
+        uses: foundry-rs/foundry-toolchain@v1
+
       - run: pnpm install
         working-directory: spec-tests
 

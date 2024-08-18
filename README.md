@@ -1,4 +1,4 @@
-# Ethereum Development Interface (EDI)
+# Cheatcalls EIP
 
 Title: Standardization of Ethereum Development and Testing Methods
 Author: Kris Kaczor
@@ -11,7 +11,9 @@ Summary of the EIP's purpose and key points.
 
 ## Simple Summary
 
-This EIP proposes a standardization of methods used across various Ethereum development and testing environments such as Hardhat, Foundry, Tenderly, and BuildBear Sandbox. The goal is to create a consistent set of APIs that smart contract developers can use regardless of their chosen development tool, thereby improving interoperability and reducing the learning curve when switching between different environments.
+This EIP proposes a standardization of JSON RPC methods used across various Ethereum development and testing environments such as Hardhat, Foundry, Tenderly, and BuildBear Sandbox. The goal is to create a consistent set of APIs that smart contract developers can use regardless of their chosen development tool, thereby improving interoperability and reducing the learning curve when switching between different environments.
+
+These new methods are similar to [cheatcodes](https://book.getfoundry.sh/forge/cheatcodes) available in foundry or hardhat tests but for JSON RPC calls, hence a name Cheatcalls.
 
 ## Abstract
 

@@ -110,3 +110,4 @@ Copyright and related rights waived via [CC0](https://creativecommons.org/public
 
 - `removed cheat_supported` in favour of using only `cheat_version` to detect support for the EIP
 - should `cheat_setNonce` throw if address is a smart contract? What about account abstraction support
+- do we even need impersontation related methods? what if make all accounts unlocked always?

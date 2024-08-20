@@ -70,9 +70,9 @@ We use [conventions](https://ethereum.org/en/developers/docs/apis/json-rpc/#conv
 | cheat_increaseTime                 | <pre>(deltaInSeconds: QUANTITY): void </pre>                   | Mines a new block with a timestamp of `lastTimestamp + deltaInSeconds`                                                                                                          |
 | cheat_setNextBlockTimestamp        | <pre>(nextTimestamp: QUANTITY): void </pre>                    | Does not mine a new block, but once new block is mined, it will have timestamp of exactly `nextTimestamp`. Any methods reading state such as `eth_call` respects new timestamp. |
 
-Todo: More methods on time manipulation, mining incoming.
+Todo: More methods on time manipulation and mining control.
 
-Exact behaviour of each method, including edge cases is described in the [test suite](https://github.com/krzkaczor/edi-tests).
+Exact behaviour of each method, including edge cases is described in the [test suite](https://github.com/krzkaczor/edi-tests) (todo).
 
 ## Rationale
 

@@ -1,5 +1,7 @@
 # Addendum 1 -- Current state of JSON RPC calls for development purposes.
 
+@todo: merge this into 1 huge table.
+
 Present snapshot of the RPCs
 
 | API                       | Available in Hardhat                    | Available in Anvil                    | Purpose of the API                                           |
@@ -37,7 +39,3 @@ Present snapshot of the RPCs
 As you can see from the above, 14 RPC methods are specific to Anvil and 2 are specific to Hardhat.
 
 In addition to the above differences, both Tenderly and BuildBear have another set of different APIs, as per the table below:
-
-\<Dipesh to insert the table\>
-
-@todo: merge this into 1 huge table.

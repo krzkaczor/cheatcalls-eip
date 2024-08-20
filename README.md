@@ -1,19 +1,20 @@
 # Cheatcalls EIP
 
-Title: Standardization of Ethereum Development and Testing Methods
-Author: Kris Kaczor
-Discussions-to: \<Link to discussion forum (e.g., Ethereum Magicians, Ethresearch)>
-Status: Draft
-Type: \<Standards Track | Informational | Meta>
-Created: 2014-07-15
+> [!NOTE]  
+> **Work in progress**. Feel free to create issues or PRs.
 
-Summary of the EIP's purpose and key points.
+Title: Standardization of Ethereum JSON RPC Methods for Development and Testing\
+Authors: Kris Kaczor (Phoenix Labs), Dipesh Sukhani (BuildBear)\
+Discussions-to: <Link to discussion forum (e.g., Ethereum Magicians, Ethresearch)>\
+Status: Pre-Draft\
+Type: Interface\
+Created: -
 
 ## Simple Summary
 
 This EIP proposes a standardization of JSON RPC methods used across various Ethereum development and testing environments such as Hardhat, Foundry, Tenderly, and BuildBear Sandbox. The goal is to create a consistent set of APIs that smart contract developers can use regardless of their chosen development tool, thereby improving interoperability and reducing the learning curve when switching between different environments.
 
-These new methods are similar to [cheatcodes](https://book.getfoundry.sh/forge/cheatcodes) available in foundry or hardhat tests but for JSON RPC calls, hence a name Cheatcalls.
+These new methods are similar to [cheatcodes](https://book.getfoundry.sh/forge/cheatcodes) available in Foundry or Hardhat tests but for JSON RPC calls, hence a name Cheatcalls.
 
 ## Abstract
 
@@ -21,7 +22,7 @@ Currently, Ethereum development and testing tools offer a variety of methods for
 
 This EIP proposes a standardized set of methods to be implemented by all Ethereum development and testing environments. These methods will cover common operations such as setting storage values, manipulating account balances, and interacting with ERC20 tokens. By adopting a consistent naming convention and behavior for these methods, we aim to simplify the development process, enhance code portability, and reduce the cognitive load on developers when working with different tools.
 
-The proposed standard includes methods such as `dev_setStorage`, `dev_setBalance`, and `dev_setERC20Balance`, which will replace their tool-specific counterparts. This standardization will allow developers to write more portable test suites and development scripts, facilitating easier migration between tools and promoting best practices across the Ethereum development ecosystem.
+The proposed standard includes methods such as `cheat_setStorage`, `cheat_setBalance`, and `cheat_setERC20Balance`, which will replace their tool-specific counterparts. This standardization will allow developers to write more portable test suites and development scripts, facilitating easier migration between tools and promoting best practices across the Ethereum development ecosystem.
 
 ## Motivation
 
@@ -51,27 +52,37 @@ The comparison table in the specification section highlights the current inconsi
 
 ## Proposed standardized methods
 
-All the developer related methods should be present in the dev namespace.
+We use [conventions](https://ethereum.org/en/developers/docs/apis/json-rpc/#conventions) established in ethereum JSON-RPC spec, extending them with ADDRESS type which is a subset of DATA type representing addresses.
 
-| API                              | Value                                                                                                      | Purpose                                                                          |
-| -------------------------------- | ---------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| dev_support                      | boolean                                                                                                    | If the node supports dev APIs eg: Geth - No, Hardhat - Yes                       |
-| dev_version                      | string                                                                                                     | The version of the dev APIs the node supports. The current version would be `v1` |
-| dev_setBalance                   | account (b160), value (u256), blockId (optional blockId; default "latest")                                 | To arbitrarily set a wallet address's native token balance                       |
-| dev_setCode                      | account (b160), code (hex), blockId (optional blockId; default "latest")                                   | To set the bytecode at a specific address                                        |
-| dev_setNonce                     | account (b160), nonce (u256), blockId (optional blockId; default "latest")                                 | To set the nonce of an account                                                   |
-| dev_setStorageAt                 | account (b160), key (h256), value (u256), blockId (optional blockId; default "latest")                     | To directly modify the storage of a contract                                     |
-| dev_setNextBlockBaseFeePerGas    |                                                                                                            | To set the base fee for the next block                                           |
-| dev_setCoinbase                  | account (b160)                                                                                             | To set the coinbase address                                                      |
-| dev_impersonateAccount           | account (b160)                                                                                             | To send transactions from an account without its private key                     |
-| dev_stopImpersonatingAccount     | account (b160)                                                                                             | To stop impersonating an account                                                 |
-| dev_impersonateAllAccounts       |                                                                                                            | To impersonate all accounts                                                      |
-| dev_stopImpersonatingAllAccounts |                                                                                                            | To stop impersonating all accounts                                               |
-| dev_mine                         | noOfBlocks (optional uint256; ; default 1), blockInterval (optional uint256; defaultNodeMineInterval or 1) | To mine a specified number of blocks                                             |
+| Method name                        | Signature                                                      | Comment                                                                                                                                                                         |
+| ---------------------------------- | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| cheat_version                      | <pre>(): string </pre>                                         | Returns semver version of the cheatcalls spec that the node supports. Example "1.0.0".                                                                                          |
+| cheat_setBalance                   | <pre>(addr: ADDRESS, balanceInWei: QUANTITY): void</pre>       |                                                                                                                                                                                 |
+| cheat_setErc20Balance              | <pre>(addr: ADDRESS, balanceInBaseUnit: QUANTITY): void </pre> | Balance is in base unit ie. 10^18                                                                                                                                               |
+| cheat_setCode                      | <pre>(addr: ADDRESS, code: DATA): void </pre>                  |                                                                                                                                                                                 |
+| cheat_setNonce                     | <pre>(addr: ADDRESS, nonce: QUANTITY): void </pre>             |                                                                                                                                                                                 |
+| cheat_setStorageAt                 | <pre>(addr: ADDRESS, key: DATA, value: QUANTITY): void </pre>  | Throws if addr is not a contract                                                                                                                                                |
+| cheat_impersonateAccount           | <pre>(addr: ADDRESS): void </pre>                              | Impersonating allows node to accept unsigned txs via `eth_sendTransaction`.                                                                                                     |
+| cheat_stopImpersonatingAccount     | <pre>(addr: ADDRESS): void </pre>                              |                                                                                                                                                                                 |
+| cheat_impersonateAllAccounts       | <pre>(): void </pre>                                           |                                                                                                                                                                                 |
+| cheat_stopImpersonatingAllAccounts | <pre>(): void </pre>                                           |                                                                                                                                                                                 |
+| cheat_mine                         | <pre>(blocks: QUANTITY): void </pre>                           |                                                                                                                                                                                 |
+| cheat_increaseTime                 | <pre>(deltaInSeconds: QUANTITY): void </pre>                   | Mines a new block with a timestamp of `lastTimestamp + deltaInSeconds`                                                                                                          |
+| cheat_setNextBlockTimestamp        | <pre>(nextTimestamp: QUANTITY): void </pre>                    | Does not mine a new block, but once new block is mined, it will have timestamp of exactly `nextTimestamp`. Any methods reading state such as `eth_call` respects new timestamp. |
+
+Todo: More methods on time manipulation and mining control.
+
+Exact behaviour of each method, including edge cases is described in the [test suite](https://github.com/krzkaczor/edi-tests) (todo).
 
 ## Rationale
 
-There are multiple test nodes available, eg: Hardhat, Anvil, Phoenix (BuildBear), Tenderly, etc. The benefit of using a test node is that we can play around with the blockchain, such as minting user balances, mining 100s of blocks, and other scenarios on the fly that help with testing a DApp. Now each test node has its own set of RPCs, so t
+<!--
+  The rationale fleshes out the specification by describing what motivated the design and why particular design decisions were made. It should describe alternate designs that were considered and related work, e.g. how the feature is supported in other languages.
+
+  The current placeholder is acceptable for a draft.
+
+  TODO: Remove this comment before submitting
+-->
 
 ## Backwards Compatibility
 
@@ -85,7 +96,7 @@ See [Attendum #1](./attendum1.md) for a comparison table of current implementati
 
 ## Implementation
 
-Ongoing...
+@todo. Tips on how to implemement `cheat_setErc20Balance` trace a balance call to find exact storage location to modify.
 
 ## Security Considerations
 
@@ -94,3 +105,8 @@ Todo: explain that cheatcalls should be only avaiable in admin RPCs.
 ## Copyright Waiver
 
 Copyright and related rights waived via [CC0](https://creativecommons.org/publicdomain/zero/1.0/).
+
+# Open questions and details:
+
+- `removed cheat_supported` in favour of using only `cheat_version` to detect support for the EIP
+- should `cheat_setNonce` throw if address is a smart contract? What about account abstraction support

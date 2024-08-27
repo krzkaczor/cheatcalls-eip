@@ -36,7 +36,7 @@ describe('evm_setNextBlockTimestamp', () => {
     strictEqual(block.timestamp, expectedTimestamp)
   })
 
-  it('should provide the next timestamp during eth_call', async () => {
+  it('should provide the next timestamp during eth_call for pending blocks', async () => {
     await using harness = await setupTestingHarness({
       originForkNetworkChainId: 1,
       forkChainId: 1337,
@@ -50,6 +50,7 @@ describe('evm_setNextBlockTimestamp', () => {
       address: mainnet.contracts.multicall3.address,
       abi: multicall3Abi,
       functionName: 'getCurrentBlockTimestamp',
+      blockTag: 'pending',
     })
 
     strictEqual(actualTimestamp, expectedTimestamp)

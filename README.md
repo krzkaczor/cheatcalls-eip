@@ -62,10 +62,13 @@ We use [conventions](https://ethereum.org/en/developers/docs/apis/json-rpc/#conv
 | cheat_setCode                      | <pre>(addr: ADDRESS, code: DATA): void </pre>                  |                                                                                                                                                                                                                  |
 | cheat_setNonce                     | <pre>(addr: ADDRESS, nonce: QUANTITY): void </pre>             |                                                                                                                                                                                                                  |
 | cheat_setStorageAt                 | <pre>(addr: ADDRESS, key: DATA, value: QUANTITY): void </pre>  | Throws if addr is not a contract                                                                                                                                                                                 |
+| cheat_setCoinbase                  | <pre>(addr: ADDRESS): void </pre>                              |                                                                                                                                                                                                                  |
 | cheat_impersonateAllAccounts       | <pre>(): void </pre>                                           |                                                                                                                                                                                                                  |
 | cheat_stopImpersonatingAllAccounts | <pre>(): void </pre>                                           |                                                                                                                                                                                                                  |
-| cheat_mine                         | <pre>(blocks: QUANTITY): void </pre>                           |                                                                                                                                                                                                                  |
-| cheat_increaseTime                 | <pre>(deltaInSeconds: QUANTITY): void </pre>                   | Mines a new block with a timestamp of `lastTimestamp + deltaInSeconds`                                                                                                                                           |
+| cheat_mine                         | <pre>(blocks: QUANTITY = 1): void </pre>                       |                                                                                                                                                                                                                  |
+| cheat_mining_mode                  | <pre>(mode: NodeInfo["miningMode"]): void </pre>               | Sets a mining mode. Explanation follows.                                                                                                                                                                         |
+| cheat_dropTransaction              | <pre>(hash: DATA): void </pre>                                 | Drops a tx from a mempool.                                                                                                                                                                                       |
+| cheat_increaseTime                 | <pre>(deltaInSec: QUANTITY): void </pre>                       | Mines a new block with a timestamp of `lastTimestamp + deltaInSeconds`                                                                                                                                           |
 | cheat_setNextBlockTimestamp        | <pre>(nextTimestamp: QUANTITY): void </pre>                    | Does not mine a new block, but once new block is mined, it will have timestamp of exactly `nextTimestamp`. Any methods reading state such as `eth_call` respects new timestamp when queried for 'pending' block. |
 
 `NodeInfo` is defined as:
@@ -83,8 +86,20 @@ interface NodeInfo {
       };
   impersonateAllStatus: boolean;
   nextBlockTimestamp: number;
+  miningMode:
+    | { type: "auto" }
+    | { type: "manual" }
+    | { type: "interval"; intervalInSec: QUANTITY };
 }
 ```
+
+### Mining modes
+
+- `auto` (default) - mine txs as soon as they come
+- `manual` - mine by manually calling `cheat_mine`
+- `interval` - mine new blocks at constant intervals
+
+`manual` and `interval` modes have mempools. Transactions can be dropped from a mempool with `cheat_dropTransaction(hash)`.
 
 Todo: More methods on time manipulation and mining control.
 
@@ -128,6 +143,5 @@ Copyright and related rights waived via [CC0](https://creativecommons.org/public
 
 # Open questions and details:
 
-- `removed cheat_supported` in favour of using only `cheat_version` to detect support for the EIP
 - should `cheat_setNonce` throw if address is a smart contract? What about account abstraction support
-- cheat code to return verifier URL for automatic code verification
+- more sophisticated mempool strategies (now it's only priority based on fees)

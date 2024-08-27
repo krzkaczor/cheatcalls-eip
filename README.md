@@ -56,7 +56,7 @@ We use [conventions](https://ethereum.org/en/developers/docs/apis/json-rpc/#conv
 
 | Method name                        | Signature                                                      | Comment                                                                                                                                                                                                          |
 | ---------------------------------- | -------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| cheat_version                      | <pre>(): string </pre>                                         | Returns semver version of the cheatcalls spec that the node supports. Example "1.0.0".                                                                                                                           |
+| cheat_info                         | <pre>(): NodeInfo </pre>                                       | Returns semver version of the cheatcalls spec that the node supports. Example "1.0.0".                                                                                                                           |
 | cheat_setBalance                   | <pre>(addr: ADDRESS, balanceInWei: QUANTITY): void</pre>       |                                                                                                                                                                                                                  |
 | cheat_setErc20Balance              | <pre>(addr: ADDRESS, balanceInBaseUnit: QUANTITY): void </pre> | Balance is in base unit ie. 10^18                                                                                                                                                                                |
 | cheat_setCode                      | <pre>(addr: ADDRESS, code: DATA): void </pre>                  |                                                                                                                                                                                                                  |
@@ -67,6 +67,24 @@ We use [conventions](https://ethereum.org/en/developers/docs/apis/json-rpc/#conv
 | cheat_mine                         | <pre>(blocks: QUANTITY): void </pre>                           |                                                                                                                                                                                                                  |
 | cheat_increaseTime                 | <pre>(deltaInSeconds: QUANTITY): void </pre>                   | Mines a new block with a timestamp of `lastTimestamp + deltaInSeconds`                                                                                                                                           |
 | cheat_setNextBlockTimestamp        | <pre>(nextTimestamp: QUANTITY): void </pre>                    | Does not mine a new block, but once new block is mined, it will have timestamp of exactly `nextTimestamp`. Any methods reading state such as `eth_call` respects new timestamp when queried for 'pending' block. |
+
+`NodeInfo` is defined as:
+
+```typescript
+interface NodeInfo {
+  cheatcallsSpecVersion: string;
+  bytecodeVerification:
+    | {
+        type: "not-supported";
+      }
+    | {
+        type: "etherscan-like";
+        url: string;
+      };
+  impersonateAllStatus: boolean;
+  nextBlockTimestamp: number;
+}
+```
 
 Todo: More methods on time manipulation and mining control.
 

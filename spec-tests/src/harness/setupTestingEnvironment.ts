@@ -11,7 +11,7 @@ interface SetupTestingEnvironmentArgs {
 }
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export async function setupTestingEnvironment(args: SetupTestingEnvironmentArgs) {
+export async function setupTestingHarness(args: SetupTestingEnvironmentArgs) {
   const forkNode: IForkNode = new AnvilNode()
   await forkNode.start({
     originForkNetworkChainId: args.originForkNetworkChainId,

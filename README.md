@@ -61,6 +61,9 @@ The comparison table in the specification section highlights the current inconsi
 | cheat_setNonce                     | <pre>(addr: Address, nonce: Quantity): void </pre>                             |                                                                                                                                                                                                                                            |
 | cheat_setStorageAt                 | <pre>(addr: Address, key: Data, value: Quantity): void </pre>                  | Throws if addr is not a contract                                                                                                                                                                                                           |
 | cheat_setCoinbase                  | <pre>(addr: Address): void </pre>                                              |                                                                                                                                                                                                                                            |
+| cheat_setMinGasPrice               | <pre>(priceInWei: Quantity \| null): void </pre>                               | To unset, call with null.                                                                                                                                                                                                                  |
+| cheat_setNextBlockBaseFeePerGas    | <pre>(priceInWei: Quantity \| null): void </pre>                               | To unset, call with null.                                                                                                                                                                                                                  |
+| cheat_setBlockGasLimit             | <pre>(gas: Quantity \| null): void </pre>                                      | `null` means no limit                                                                                                                                                                                                                      |
 | cheat_impersonateAllAccounts       | <pre>(): void </pre>                                                           |                                                                                                                                                                                                                                            |
 | cheat_stopImpersonatingAllAccounts | <pre>(): void </pre>                                                           |                                                                                                                                                                                                                                            |
 | cheat_mine                         | <pre>(blocks: Quantity = 1, gapInSec: Quantity = 1): void </pre>               |                                                                                                                                                                                                                                            |
@@ -85,6 +88,9 @@ interface NodeInfo {
   miningMode: MiningMode;
   impersonateAllStatus: boolean;
   nextBlockTimestamp: number;
+  minGasPrice: Quantity;
+  gasLimit: Quantity;
+  nextBlockBaseFeePerGas: Quantity;
 }
 
 type RunMode =
@@ -180,3 +186,4 @@ Copyright and related rights waived via [CC0](https://creativecommons.org/public
 # Open questions and details:
 
 - there is no way to impersonate a single account. Is this needed? I found that impersonateAll is much more convenient.
+- maybe cheatcalls should be namespaced? like cheat*gas*{setBlockLimit, setNextBlockBaseFeePerGas}

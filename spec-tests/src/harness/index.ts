@@ -1,1 +1,1 @@
-export { setupTestingHarness as setupTestingEnvironment } from './setupTestingEnvironment'
+export { setupTestHarness as setupTestingEnvironment } from './setupTestingEnvironment'

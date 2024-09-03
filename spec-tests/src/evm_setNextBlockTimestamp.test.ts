@@ -2,7 +2,7 @@ import { strictEqual } from 'node:assert'
 import { describe, it } from 'node:test'
 import { mainnet } from 'viem/chains'
 import { multicall3Abi } from './harness/abis/multicall3'
-import { setupTestingHarness } from './harness/setupTestingEnvironment'
+import { setupTestHarness } from './harness/setupTestingEnvironment'
 import { sleep } from './utils/sleep'
 
 const blockInfo = {
@@ -12,7 +12,7 @@ const blockInfo = {
 
 describe('evm_setNextBlockTimestamp', () => {
   it('should set the next block timestamp', async () => {
-    await using harness = await setupTestingHarness({
+    await using harness = await setupTestHarness({
       originForkNetworkChainId: 1,
       forkChainId: 1337,
       forkBlockNumber: blockInfo.blockNumber,
@@ -37,7 +37,7 @@ describe('evm_setNextBlockTimestamp', () => {
   })
 
   it('should provide the next timestamp during eth_call for pending blocks', async () => {
-    await using harness = await setupTestingHarness({
+    await using harness = await setupTestHarness({
       originForkNetworkChainId: 1,
       forkChainId: 1337,
       forkBlockNumber: blockInfo.blockNumber,
@@ -57,7 +57,7 @@ describe('evm_setNextBlockTimestamp', () => {
   })
 
   it('should not mine new block immediately', async () => {
-    await using harness = await setupTestingHarness({
+    await using harness = await setupTestHarness({
       originForkNetworkChainId: 1,
       forkChainId: 1337,
       forkBlockNumber: blockInfo.blockNumber,
@@ -73,7 +73,7 @@ describe('evm_setNextBlockTimestamp', () => {
   })
 
   it('should set the exact next block timestamp even after a delay', { timeout: 10_000 }, async () => {
-    await using harness = await setupTestingHarness({
+    await using harness = await setupTestHarness({
       originForkNetworkChainId: 1,
       forkChainId: 1337,
       forkBlockNumber: blockInfo.blockNumber,

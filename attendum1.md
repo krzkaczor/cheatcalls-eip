@@ -1,5 +1,8 @@
 # Addendum 1 -- Current state of JSON RPC calls for development purposes.
 
+- [hardhat docs](https://hardhat.org/hardhat-network/docs/reference#hardhat-network-methods)
+- [foundry docs](https://book.getfoundry.sh/reference/anvil/#special-methods)
+
 @todo: merge this into 1 huge table.
 
 Present snapshot of the RPCs

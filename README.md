@@ -52,65 +52,81 @@ The comparison table in the specification section highlights the current inconsi
 
 ## Proposed standardized methods
 
-We use [conventions](https://ethereum.org/en/developers/docs/apis/json-rpc/#conventions) established in ethereum JSON-RPC spec, extending them with ADDRESS type which is a subset of DATA type representing addresses.
-
 | Method name                        | Signature                                                                      | Comment                                                                                                                                                                                                                                    |
 | ---------------------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | cheat_info                         | <pre>(): NodeInfo </pre>                                                       | Returns semver version of the cheatcalls spec that the node supports. Example "1.0.0".                                                                                                                                                     |
-| cheat_setBalance                   | <pre>(addr: ADDRESS, balanceInWei: QUANTITY): void</pre>                       |                                                                                                                                                                                                                                            |
-| cheat_setErc20Balance              | <pre>(token: ADDRESS, addr: ADDRESS, balanceInBaseUnit: QUANTITY): void </pre> | Balance is in base unit ie. 10^18                                                                                                                                                                                                          |
-| cheat_setCode                      | <pre>(addr: ADDRESS, code: DATA): void </pre>                                  |                                                                                                                                                                                                                                            |
-| cheat_setNonce                     | <pre>(addr: ADDRESS, nonce: QUANTITY): void </pre>                             |                                                                                                                                                                                                                                            |
-| cheat_setStorageAt                 | <pre>(addr: ADDRESS, key: DATA, value: QUANTITY): void </pre>                  | Throws if addr is not a contract                                                                                                                                                                                                           |
-| cheat_setCoinbase                  | <pre>(addr: ADDRESS): void </pre>                                              |                                                                                                                                                                                                                                            |
+| cheat_setBalance                   | <pre>(addr: Address, balanceInWei: Quantity): void</pre>                       |                                                                                                                                                                                                                                            |
+| cheat_setErc20Balance              | <pre>(token: Address, addr: Address, balanceInBaseUnit: Quantity): void </pre> | Balance is in base unit ie. 10^18                                                                                                                                                                                                          |
+| cheat_setCode                      | <pre>(addr: Address, code: Data): void </pre>                                  |                                                                                                                                                                                                                                            |
+| cheat_setNonce                     | <pre>(addr: Address, nonce: Quantity): void </pre>                             |                                                                                                                                                                                                                                            |
+| cheat_setStorageAt                 | <pre>(addr: Address, key: Data, value: Quantity): void </pre>                  | Throws if addr is not a contract                                                                                                                                                                                                           |
+| cheat_setCoinbase                  | <pre>(addr: Address): void </pre>                                              |                                                                                                                                                                                                                                            |
 | cheat_impersonateAllAccounts       | <pre>(): void </pre>                                                           |                                                                                                                                                                                                                                            |
 | cheat_stopImpersonatingAllAccounts | <pre>(): void </pre>                                                           |                                                                                                                                                                                                                                            |
-| cheat_mine                         | <pre>(blocks: QUANTITY = 1, gapInSec: QUANTITY = 1): void </pre>               |                                                                                                                                                                                                                                            |
+| cheat_mine                         | <pre>(blocks: Quantity = 1, gapInSec: Quantity = 1): void </pre>               |                                                                                                                                                                                                                                            |
 | cheat_mining_mode                  | <pre>(mode: InputMiningMode): void </pre>                                      | Sets a mining mode. Explanation follows.                                                                                                                                                                                                   |
-| cheat_dropTransaction              | <pre>(hash: DATA): void </pre>                                                 | Drops a tx from a mempool.                                                                                                                                                                                                                 |
-| cheat_increaseTime                 | <pre>(deltaInSec: QUANTITY): void </pre>                                       | Mines a new block with a timestamp of `lastTimestamp + deltaInSeconds`                                                                                                                                                                     |
-| cheat_setNextBlockTimestamp        | <pre>(nextTimestamp: QUANTITY \| null): void </pre>                            | Does not mine a new block, but once new block is mined, it will have timestamp of exactly `nextTimestamp`. Any methods reading state such as `eth_call` respects new timestamp when queried for 'pending' block. To unset, call with null. |
-| cheat_snapshot                     | <pre>(): QUANTITY </pre>                                                       | Snapshots current state of the blockchain, including Cheatcall related state like `nextBlockTimestamp`. Returned id has to be sequential.                                                                                                  |
-| cheat_revert_snapshot              | <pre>(id: QUANTITY): void </pre>                                               | Replaces `evm_revert`                                                                                                                                                                                                                      |
-| cheat_reset                        | <pre>(mode: NodeInfo["runMode"]): void </pre>                                  | Resets the whole node including snapshots and any Cheatcalls related state. Can be used to start forking a new network or change chain id.                                                                                                 |
+| cheat_dropTransaction              | <pre>(hash: Data): void </pre>                                                 | Drops a tx from a mempool.                                                                                                                                                                                                                 |
+| cheat_increaseTime                 | <pre>(deltaInSec: Quantity): void </pre>                                       | Mines a new block with a timestamp of `lastTimestamp + deltaInSeconds`                                                                                                                                                                     |
+| cheat_setNextBlockTimestamp        | <pre>(nextTimestamp: Quantity \| null): void </pre>                            | Does not mine a new block, but once new block is mined, it will have timestamp of exactly `nextTimestamp`. Any methods reading state such as `eth_call` respects new timestamp when queried for 'pending' block. To unset, call with null. |
+| cheat_snapshot                     | <pre>(): Quantity </pre>                                                       | Snapshots current state of the blockchain, including Cheatcall related state like `nextBlockTimestamp`. Returned id has to be sequential.                                                                                                  |
+| cheat_revert_snapshot              | <pre>(id: Quantity): void </pre>                                               | Replaces `evm_revert`                                                                                                                                                                                                                      |
+| cheat_reset                        | <pre>(mode: InputRunMode): void </pre>                                         | Resets the whole node including snapshots, mempool and any Cheatcalls related state. Can be used to start forking a new network or change chain id.                                                                                        |
 
 ```typescript
+// using conventions established in https://ethereum.org/en/developers/docs/apis/json-rpc/#conventions
+type Data = string; // Unformatted data ex. 0x004200
+type Address = string; // subset of Data, representing addresses ex. 0x6b175474e89094c44da98b954eedeac495271d0f
+type Quantity = string; // hex numbers ex. 0x400
+
 interface NodeInfo {
   cheatcallsSpecVersion: string;
-  bytecodeVerification:
-    | {
-        type: "not-supported";
-      }
-    | {
-        type: "etherscan-like";
-        url: string;
-      };
+  bytecodeVerification: BytecodeVerification;
+  runMode: RunMode;
+  miningMode: MiningMode;
   impersonateAllStatus: boolean;
   nextBlockTimestamp: number;
-  runMode:
-    | { type: "new" }
-    | {
-        type: "fork";
-        originRpc: url;
-        blockNumber?: number;
-        forkChainId?: number;
-      };
-  miningMode: MiningMode;
 }
+
+type RunMode =
+  | { type: "new"; chainId: number }
+  | {
+      type: "fork";
+      originRpc: url;
+      blockNumber: number;
+      forkChainId: number;
+    };
+
+type InputRunMode =
+  | { type: "new"; chainId: number }
+  | {
+      type: "fork";
+      originRpc: url;
+      blockNumber?: number; // defaults to latest
+      forkChainId?: number; // defaults to origin chain id
+    };
 
 type MiningMode =
   | { type: "auto" }
   | { type: "manual"; ordering: MiningOrdering }
-  | { type: "interval"; intervalInSec: QUANTITY; ordering: MiningOrdering };
+  | { type: "interval"; intervalInSec: Quantity; ordering: MiningOrdering };
 
 type InputMiningMode =
   | { type: "auto" }
   | { type: "manual"; ordering?: MiningOrdering }
-  | { type: "interval"; intervalInSec: QUANTITY; ordering?: MiningOrdering };
+  | { type: "interval"; intervalInSec: Quantity; ordering?: MiningOrdering };
 
 type MiningOrdering =
   | "fees" // default
   | "fifo";
+
+type BytecodeVerification =
+  | {
+      type: "not-supported";
+    }
+  | {
+      type: "etherscan-like";
+      url: string;
+    };
 ```
 
 ### Mining modes
@@ -163,4 +179,4 @@ Copyright and related rights waived via [CC0](https://creativecommons.org/public
 
 # Open questions and details:
 
-- more sophisticated mempool strategies (now it's only priority based on fees)
+- there is no way to impersonate a single account. Is this needed? I found that impersonateAll is much more convenient.

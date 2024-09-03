@@ -66,15 +66,13 @@ We use [conventions](https://ethereum.org/en/developers/docs/apis/json-rpc/#conv
 | cheat_impersonateAllAccounts       | <pre>(): void </pre>                                                           |                                                                                                                                                                                                                                            |
 | cheat_stopImpersonatingAllAccounts | <pre>(): void </pre>                                                           |                                                                                                                                                                                                                                            |
 | cheat_mine                         | <pre>(blocks: QUANTITY = 1, gapInSec: QUANTITY = 1): void </pre>               |                                                                                                                                                                                                                                            |
-| cheat_mining_mode                  | <pre>(mode: NodeInfo["miningMode"]): void </pre>                               | Sets a mining mode. Explanation follows.                                                                                                                                                                                                   |
+| cheat_mining_mode                  | <pre>(mode: InputMiningMode): void </pre>                                      | Sets a mining mode. Explanation follows.                                                                                                                                                                                                   |
 | cheat_dropTransaction              | <pre>(hash: DATA): void </pre>                                                 | Drops a tx from a mempool.                                                                                                                                                                                                                 |
 | cheat_increaseTime                 | <pre>(deltaInSec: QUANTITY): void </pre>                                       | Mines a new block with a timestamp of `lastTimestamp + deltaInSeconds`                                                                                                                                                                     |
 | cheat_setNextBlockTimestamp        | <pre>(nextTimestamp: QUANTITY \| null): void </pre>                            | Does not mine a new block, but once new block is mined, it will have timestamp of exactly `nextTimestamp`. Any methods reading state such as `eth_call` respects new timestamp when queried for 'pending' block. To unset, call with null. |
 | cheat_snapshot                     | <pre>(): QUANTITY </pre>                                                       | Snapshots current state of the blockchain, including Cheatcall related state like `nextBlockTimestamp`. Returned id has to be sequential.                                                                                                  |
 | cheat_revert_snapshot              | <pre>(id: QUANTITY): void </pre>                                               | Replaces `evm_revert`                                                                                                                                                                                                                      |
 | cheat_reset                        | <pre>(mode: NodeInfo["runMode"]): void </pre>                                  | Resets the whole node including snapshots and any Cheatcalls related state. Can be used to start forking a new network or change chain id.                                                                                                 |
-
-`NodeInfo` is defined as:
 
 ```typescript
 interface NodeInfo {
@@ -97,11 +95,22 @@ interface NodeInfo {
         blockNumber?: number;
         forkChainId?: number;
       };
-  miningMode:
-    | { type: "auto" }
-    | { type: "manual" }
-    | { type: "interval"; intervalInSec: QUANTITY };
+  miningMode: MiningMode;
 }
+
+type MiningMode =
+  | { type: "auto" }
+  | { type: "manual"; ordering: MiningOrdering }
+  | { type: "interval"; intervalInSec: QUANTITY; ordering: MiningOrdering };
+
+type InputMiningMode =
+  | { type: "auto" }
+  | { type: "manual"; ordering?: MiningOrdering }
+  | { type: "interval"; intervalInSec: QUANTITY; ordering?: MiningOrdering };
+
+type MiningOrdering =
+  | "fees" // default
+  | "fifo";
 ```
 
 ### Mining modes
@@ -112,7 +121,7 @@ interface NodeInfo {
 
 `manual` and `interval` modes have mempools. Transactions can be dropped from a mempool with `cheat_dropTransaction(hash)`.
 
-Todo: More methods on time manipulation and mining control.
+### Other
 
 Exact behaviour of each method, including edge cases is described in the [test suite](https://github.com/krzkaczor/edi-tests) (todo).
 

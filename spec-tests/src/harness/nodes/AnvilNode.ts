@@ -1,8 +1,9 @@
 import assert from 'node:assert'
 import { Anvil, createAnvil } from '@viem/anvil'
+import { Chain, Transport, createClient } from 'viem'
 import { mainnet } from 'viem/chains'
 import { raise } from '../../utils/raise'
-import { ForkOptions, IForkNode } from './types'
+import { CheatcallsClient, ForkOptions, IForkNode } from './types'
 
 export class AnvilNode implements IForkNode {
   private anvil: Anvil | undefined
@@ -21,6 +22,21 @@ export class AnvilNode implements IForkNode {
 
   async stop(): Promise<void> {
     await this.anvil?.stop()
+  }
+
+  getCheatcallsClient(chain: Chain, transport: Transport): CheatcallsClient {
+    // backward compatible client using already implemented methods in anvil
+    return createClient({
+      chain,
+      transport,
+    }).extend((client) => ({
+      async setNextBlockTimestamp({ timestamp }: { timestamp: bigint }): Promise<void> {
+        await client.request({
+          method: 'evm_setNextBlockTimestamp' as any,
+          params: [`0x${timestamp.toString(16)}`],
+        })
+      },
+    }))
   }
 }
 

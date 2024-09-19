@@ -1,4 +1,4 @@
-import { strictEqual } from 'node:assert'
+import { rejects, strictEqual } from 'node:assert'
 import { describe, it } from 'node:test'
 import { mainnet } from 'viem/chains'
 import { multicall3Abi } from './harness/abis/multicall3'
@@ -10,7 +10,7 @@ const blockInfo = {
   blockTimestamp: 1722516575n,
 }
 
-describe('evm_setNextBlockTimestamp', () => {
+describe('cheat_setNextBlockTimestamp', () => {
   it('should set the next block timestamp', async () => {
     await using harness = await setupTestHarness({
       originForkNetworkChainId: 1,
@@ -98,6 +98,16 @@ describe('evm_setNextBlockTimestamp', () => {
     strictEqual(block.number, blockInfo.blockNumber + 1n)
     strictEqual(block.timestamp, expectedTimestamp)
   })
-  it('should not allowing setting up a timestamp from the past')
+
+  it('should not allowing setting up a timestamp from the past', async () => {
+    await using harness = await setupTestHarness({
+      originForkNetworkChainId: 1,
+      forkChainId: 1337,
+      forkBlockNumber: blockInfo.blockNumber,
+    })
+    const expectedTimestamp = blockInfo.blockTimestamp - 1_000n
+
+    await rejects(harness.testClient.setNextBlockTimestamp({ timestamp: expectedTimestamp }))
+  })
   it('should maintain timestamp gap after tx was mined')
 })

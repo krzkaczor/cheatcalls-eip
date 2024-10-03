@@ -4,7 +4,7 @@
 > **Work in progress**. Feel free to create issues or PRs.
 
 Title: Standardization of Ethereum JSON RPC Methods for Development and Testing\
-Authors: Kris Kaczor (Phoenix Labs), Dipesh Sukhani (BuildBear)\
+Authors: Kris Kaczor (Phoenix Labs), Dipesh Sukhani (BuildBear), Emmanuel Antony (BuildBear)\
 Discussions-to: <Link to discussion forum (e.g., Ethereum Magicians, Ethresearch)>\
 Status: Pre-Draft\
 Type: Interface\

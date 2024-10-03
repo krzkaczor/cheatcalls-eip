@@ -1,4 +1,4 @@
-import { Address, Chain, Transport } from 'viem'
+import { Address, Chain, Hex, Transport } from 'viem'
 
 export interface ForkOptions {
   originForkNetworkChainId: number
@@ -30,4 +30,6 @@ export interface CheatcallsClient {
     address: Address
     nonce: number
   }): Promise<void>
+  setCode({ address, code }: { address: Address; code: Hex }): Promise<void>
+  setStorageAt({ address, slot, value }: { address: Address; slot: Hex; value: Hex }): Promise<void>
 }

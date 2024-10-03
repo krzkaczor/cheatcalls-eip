@@ -1,7 +1,7 @@
 import assert from 'node:assert'
 import net, { AddressInfo } from 'node:net'
 import { Anvil, createAnvil } from '@viem/anvil'
-import { Address, Chain, Transport, createClient } from 'viem'
+import { Address, Chain, Hex, Transport, createClient } from 'viem'
 import { mainnet } from 'viem/chains'
 import { raise } from '../../utils/raise'
 import { CheatcallsClient, ForkOptions, IForkNode } from './types'
@@ -79,6 +79,32 @@ export class AnvilNode implements IForkNode {
         await client.request({
           method: 'anvil_setNonce' as any,
           params: [address, `0x${nonce.toString(16)}`],
+        })
+      },
+      async setCode({
+        address,
+        code,
+      }: {
+        address: Address
+        code: Hex
+      }): Promise<void> {
+        await client.request({
+          method: 'anvil_setCode' as any,
+          params: [address, code],
+        })
+      },
+      async setStorageAt({
+        address,
+        slot,
+        value,
+      }: {
+        address: Address
+        slot: Hex
+        value: Hex
+      }): Promise<void> {
+        await client.request({
+          method: 'anvil_setStorageAt' as any,
+          params: [address, slot, value],
         })
       },
     }))

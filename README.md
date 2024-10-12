@@ -1,19 +1,16 @@
 # Cheatcalls EIP
 
-> [!NOTE]
-> **Work in progress**. Feel free to create issues or PRs.
-
-| eip | title | description | author | type | category | status | created | discussions-to |
-|-----|-------|-------------|--------|------|----------|--------|---------|----------------|
-| eip-xxxx | Standardization of Ethereum Development and Testing Methods | <Description is one full (short) sentence> | Kris Kaczor \<chris@kaczor.io\>, Emmanuel Antony \<emmanuelantony2000@gmail.com\> | Standards Track | Core | Draft | 2024-10-08 | <To be submitted after> |
+| eip | title          | description | author | type | category  | status | created    | discussions-to |
+|-----|----------------|-------------|--------|------|-----------|--------|------------|----------------|
+| eip-xxxx | Cheatcalls EIP | Standardization of Ethereum Development and Testing Methods | Kris Kaczor \<chris@kaczor.io\>, Emmanuel Antony \<emmanuelantony2000@gmail.com\> | Standards Track | Interface | Draft | 2024-11-12 | <To be submitted after> |
 
 ## Abstract
 
-Currently, Ethereum development and testing tools offer a variety of methods for manipulating the blockchain state during testing. While some methods share the same name across different platforms (e.g., `evm_increaseTime`), their behavior can vary significantly, especially in edge cases. Additionally, many methods are unique to specific tools (e.g., `hardhat_setStorageAt`, `tenderly_setStorageAt`, `tenderly_setErc20Balance`, `buildbear_ERC20Faucet`). This inconsistency creates unnecessary complexity for developers who work across multiple environments or transition between tools.
+Currently, Ethereum development and testing tools offer a variety of methods for manipulating the blockchain state during testing. While some methods share the same name across different platforms (e.g., `evm_increaseTime`), their behavior can vary significantly, especially in edge cases. Additionally, many methods are unique to specific tools (e.g., `hardhat_setStorageAt`, `tenderly_setStorageAt`, `tenderly_setErc20Balance`, `buildbear_ERC20Faucet`). Finally, there are often times when some functionality is completely missing from a given node. These inconsistencies create unnecessary complexity for developers and result in vendor lock-in.
 
-This EIP proposes a standardized set of methods to be implemented by all Ethereum development and testing environments. These methods will cover common operations such as setting storage values, manipulating account balances, and interacting with ERC20 tokens. By adopting a consistent naming convention and behavior for these methods, we aim to simplify the development process, enhance code portability, and reduce the cognitive load on developers when working with different tools.
+This EIP proposes a standardized set of methods to be implemented by all Ethereum development and testing environments. These methods cover common operations such as setting storage values, manipulating account balances, and interacting with ERC20 tokens. By adopting a consistent naming convention and behavior for these methods, we aim to simplify the development process, enhance code portability, and reduce the cognitive load on developers when working with different tools.
 
-The proposed standard includes methods such as `cheat_setStorage`, `cheat_setBalance`, and `cheat_setERC20Balance`, which will replace their tool-specific counterparts. These new methods are similar to [cheatcodes](https://book.getfoundry.sh/forge/cheatcodes) available in Foundry or Hardhat tests but for JSON RPC calls, hence a name Cheatcalls. This standardization will allow developers to write more portable test suites and development scripts, facilitating easier migration between tools and promoting best practices across the Ethereum development ecosystem.
+The proposed standard includes methods such as `cheat_setStorage`, `cheat_setBalance`, and `cheat_setERC20Balance`, which will replace their tool-specific counterparts. These new methods are similar to [cheatcodes](https://book.getfoundry.sh/forge/cheatcodes) available in Foundry or Hardhat tests but for JSON RPC calls, hence a name Cheatcalls.
 
 ## Motivation
 
@@ -156,8 +153,6 @@ We dropped support for impersonating particular accounts in favour of impersonat
 
 This EIP doesn't break any existing functionality in existing production grade nodes, eg: Geth, Reth, Nethermind, etc. This EIP however will affect to an extent, and deprecate certain RPCs in test nodes, eg: Hardhat, Anvil, Phoenix (BuildBear), etc. The RPCs that are being deprecated will be replaced by standardized RPCs that have been listed above in the proposal. User scripts, and other dependent tools/plugins might require minor changes, to be compatible.
 
-See [Addendum #1](./addendum1.md) for a comparison table of current implementations.
-
 ## Test Cases
 
 [edi-tests](https://github.com/krzkaczor/edi-tests) - Repository testing adherence to the spec.
@@ -173,8 +168,3 @@ Todo: explain that cheatcalls should be only available in admin RPCs.
 ## Copyright Waiver
 
 Copyright and related rights waived via [CC0](https://creativecommons.org/publicdomain/zero/1.0/).
-
-# Open questions and details:
-
-- there is no way to impersonate a single account. Is this needed? I found that impersonateAll is much more convenient.
-- maybe cheatcalls should be namespaced? like cheat*gas*{setBlockLimit, setNextBlockBaseFeePerGas}

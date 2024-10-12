@@ -1,20 +1,11 @@
 # Cheatcalls EIP
 
-> [!NOTE]  
+> [!NOTE]
 > **Work in progress**. Feel free to create issues or PRs.
 
-Title: Standardization of Ethereum JSON RPC Methods for Development and Testing\
-Authors: Kris Kaczor (Phoenix Labs), Dipesh Sukhani (BuildBear), Emmanuel Antony (BuildBear)\
-Discussions-to: <Link to discussion forum (e.g., Ethereum Magicians, Ethresearch)>\
-Status: Pre-Draft\
-Type: Interface\
-Created: -
-
-## Simple Summary
-
-This EIP proposes a standardization of JSON RPC methods used across various Ethereum development and testing environments such as Hardhat, Foundry, Tenderly, and BuildBear Sandbox. The goal is to create a consistent set of APIs that smart contract developers can use regardless of their chosen development tool, thereby improving interoperability and reducing the learning curve when switching between different environments.
-
-These new methods are similar to [cheatcodes](https://book.getfoundry.sh/forge/cheatcodes) available in Foundry or Hardhat tests but for JSON RPC calls, hence a name Cheatcalls.
+| eip | title | description | author | type | category | status | created | discussions-to |
+|-----|-------|-------------|--------|------|----------|--------|---------|----------------|
+| eip-xxxx | Standardization of Ethereum Development and Testing Methods | <Description is one full (short) sentence> | Kris Kaczor \<chris@kaczor.io\>, Emmanuel Antony \<emmanuelantony2000@gmail.com\> | Standards Track | Core | Draft | 2024-10-08 | <To be submitted after> |
 
 ## Abstract
 
@@ -22,7 +13,7 @@ Currently, Ethereum development and testing tools offer a variety of methods for
 
 This EIP proposes a standardized set of methods to be implemented by all Ethereum development and testing environments. These methods will cover common operations such as setting storage values, manipulating account balances, and interacting with ERC20 tokens. By adopting a consistent naming convention and behavior for these methods, we aim to simplify the development process, enhance code portability, and reduce the cognitive load on developers when working with different tools.
 
-The proposed standard includes methods such as `cheat_setStorage`, `cheat_setBalance`, and `cheat_setERC20Balance`, which will replace their tool-specific counterparts. This standardization will allow developers to write more portable test suites and development scripts, facilitating easier migration between tools and promoting best practices across the Ethereum development ecosystem.
+The proposed standard includes methods such as `cheat_setStorage`, `cheat_setBalance`, and `cheat_setERC20Balance`, which will replace their tool-specific counterparts. These new methods are similar to [cheatcodes](https://book.getfoundry.sh/forge/cheatcodes) available in Foundry or Hardhat tests but for JSON RPC calls, hence a name Cheatcalls. This standardization will allow developers to write more portable test suites and development scripts, facilitating easier migration between tools and promoting best practices across the Ethereum development ecosystem.
 
 ## Motivation
 
@@ -145,7 +136,7 @@ type BytecodeVerification =
 
 ### Other
 
-Exact behaviour of each method, including edge cases is described in the [test suite](https://github.com/krzkaczor/edi-tests) (todo).
+Exact behavior of each method, including edge cases is described in the [test suite](https://github.com/krzkaczor/edi-tests) (todo).
 
 ## Rationale
 
@@ -165,7 +156,7 @@ We dropped support for impersonating particular accounts in favour of impersonat
 
 This EIP doesn't break any existing functionality in existing production grade nodes, eg: Geth, Reth, Nethermind, etc. This EIP however will affect to an extent, and deprecate certain RPCs in test nodes, eg: Hardhat, Anvil, Phoenix (BuildBear), etc. The RPCs that are being deprecated will be replaced by standardized RPCs that have been listed above in the proposal. User scripts, and other dependent tools/plugins might require minor changes, to be compatible.
 
-See [Attendum #1](./attendum1.md) for a comparison table of current implementations.
+See [Addendum #1](./addendum1.md) for a comparison table of current implementations.
 
 ## Test Cases
 
@@ -173,11 +164,11 @@ See [Attendum #1](./attendum1.md) for a comparison table of current implementati
 
 ## Implementation
 
-@todo. Tips on how to implemement `cheat_setErc20Balance` trace a balance call to find exact storage location to modify.
+@todo. Tips on how to implement `cheat_setErc20Balance` trace a balance call to find exact storage location to modify.
 
 ## Security Considerations
 
-Todo: explain that cheatcalls should be only avaiable in admin RPCs.
+Todo: explain that cheatcalls should be only available in admin RPCs.
 
 ## Copyright Waiver
 

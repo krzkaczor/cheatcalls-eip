@@ -15,30 +15,9 @@ Currently, Ethereum development and testing tools offer a variety of methods for
 
 ## Specification
 
-## Proposed standardized methods
+For a lack of better language, specification is described using TypeScript like type system.
 
-| Method name                        | Signature                                                                      | Comment                                                                                                                                                                                                                                    |
-| ---------------------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| cheat_info                         | <pre>(): NodeInfo </pre>                                                       | Returns semver version of the cheatcalls spec that the node supports. Example "1.0.0".                                                                                                                                                     |
-| cheat_setBalance                   | <pre>(addr: Address, balanceInWei: Quantity): void</pre>                       |                                                                                                                                                                                                                                            |
-| cheat_setErc20Balance              | <pre>(token: Address, addr: Address, balanceInBaseUnit: Quantity): void </pre> | Balance is in base unit ie. 10^18                                                                                                                                                                                                          |
-| cheat_setCode                      | <pre>(addr: Address, code: Data): void </pre>                                  |                                                                                                                                                                                                                                            |
-| cheat_setNonce                     | <pre>(addr: Address, nonce: Quantity): void </pre>                             |                                                                                                                                                                                                                                            |
-| cheat_setStorageAt                 | <pre>(addr: Address, key: Data, value: Quantity): void </pre>                  | Throws if addr is not a contract                                                                                                                                                                                                           |
-| cheat_setCoinbase                  | <pre>(addr: Address): void </pre>                                              |                                                                                                                                                                                                                                            |
-| cheat_setMinGasPrice               | <pre>(priceInWei: Quantity \| null): void </pre>                               | To unset, call with null.                                                                                                                                                                                                                  |
-| cheat_setNextBlockBaseFeePerGas    | <pre>(priceInWei: Quantity \| null): void </pre>                               | To unset, call with null.                                                                                                                                                                                                                  |
-| cheat_setBlockGasLimit             | <pre>(gas: Quantity \| null): void </pre>                                      | `null` means no limit                                                                                                                                                                                                                      |
-| cheat_impersonateAllAccounts       | <pre>(): void </pre>                                                           |                                                                                                                                                                                                                                            |
-| cheat_stopImpersonatingAllAccounts | <pre>(): void </pre>                                                           |                                                                                                                                                                                                                                            |
-| cheat_mine                         | <pre>(blocks: Quantity = 1, gapInSec: Quantity = 1): void </pre>               |                                                                                                                                                                                                                                            |
-| cheat_mining_mode                  | <pre>(mode: InputMiningMode): void </pre>                                      | Sets a mining mode. Explanation follows.                                                                                                                                                                                                   |
-| cheat_dropTransaction              | <pre>(hash: Data): void </pre>                                                 | Drops a tx from a mempool.                                                                                                                                                                                                                 |
-| cheat_increaseTime                 | <pre>(deltaInSec: Quantity): void </pre>                                       | Mines a new block with a timestamp of `lastTimestamp + deltaInSeconds`                                                                                                                                                                     |
-| cheat_setNextBlockTimestamp        | <pre>(nextTimestamp: Quantity \| null): void </pre>                            | Does not mine a new block, but once new block is mined, it will have timestamp of exactly `nextTimestamp`. Any methods reading state such as `eth_call` respects new timestamp when queried for 'pending' block. To unset, call with null. |
-| cheat_snapshot                     | <pre>(): Quantity </pre>                                                       | Snapshots current state of the blockchain, including Cheatcall related state like `nextBlockTimestamp`. Returned id has to be sequential.                                                                                                  |
-| cheat_revert_snapshot              | <pre>(id: Quantity): void </pre>                                               | Replaces `evm_revert`                                                                                                                                                                                                                      |
-| cheat_reset                        | <pre>(mode: InputRunMode): void </pre>                                         | Resets the whole node including snapshots, mempool and any Cheatcalls related state. Can be used to start forking a new network or change chain id.                                                                                        |
+### Type definitions
 
 ```typescript
 // using conventions established in https://ethereum.org/en/developers/docs/apis/json-rpc/#conventions
@@ -100,24 +79,50 @@ type BytecodeVerification =
     };
 ```
 
-### Mining modes
+### JSON RPC Methods
 
-- `auto` (default) - mine txs as soon as they come
-- `manual` - mine by manually calling `cheat_mine`
-- `interval` - mine new blocks at constant intervals
-
-`manual` and `interval` modes have mempools. Transactions can be dropped from a mempool with `cheat_dropTransaction(hash)`.
-
-### Other
+* `cheat_info(): NodeInfo`
+  * Returns information about the node and the state of different Cheatcalls.
+* `cheat_setBalance(addr: Address, balanceInWei: Quantity): void`
+* `cheat_setErc20Balance(token: Address, addr: Address, balanceInBaseUnit: Quantity): void`
+  * Balance is in base unit ie. 10^18
+  * This is a "best effort implementation". See Implementation section for further description.
+* `cheat_setCode(addr: Address, code: Data): void`
+* `cheat_setNonce(addr: Address, nonce: Quantity): void`
+* `cheat_setStorageAt(addr: Address, key: Data, value: Quantity): void`
+  * Throws if addr is not a contract
+* `cheat_setCoinbase(addr: Address): void`
+* `cheat_setMinGasPrice(priceInWei: Quantity \| null): void`
+  * To unset, call with `null`.
+* `cheat_setNextBlockBaseFeePerGas(priceInWei: Quantity \| null): void`
+  * To unset, call with `null`.
+* `cheat_setBlockGasLimit(gas: Quantity \| null): void`
+  * `null` means no limit
+* `cheat_impersonateAllAccounts(): void`
+* `cheat_stopImpersonatingAllAccounts(): void`
+* `cheat_mine(blocks: Quantity = 1, gapInSec: Quantity = 1): void`
+* `cheat_mining_mode(mode: InputMiningMode): void`
+  * Sets a mining mode. One of:
+    * `auto` (default) - mine txs as soon as they come
+    * `manual` - mine by manually calling `cheat_mine`
+    * `interval`interval` - mine new blocks at constant intervals
+  * `manual` and `interval` modes have mempools. Transactions can be dropped from a mempool with `cheat_dropTransaction(hash)`.
+* `cheat_dropTransaction(hash: Data): void`
+  * Drops a tx from a mempool.
+* `cheat_increaseTime(deltaInSec: Quantity): void`
+  * Mines a new block with a timestamp of `lastTimestamp + deltaInSeconds`
+* `cheat_setNextBlockTimestamp(nextTimestamp: Quantity \| null): void`
+  * Does not mine a new block, but once new block is mined, it will have timestamp of exactly `nextTimestamp`. Any methods reading state such as `eth_call` respects new timestamp when queried for 'pending' block. To unset, call with null.
+* `cheat_snapshot(): Quantity`
+  * Snapshots current state of the blockchain, including Cheatcall related state like `nextBlockTimestamp`. Returned id has to be sequential.
+* `cheat_revert_snapshot(id: Quantity): void`
+  * Replaces `evm_revert`
 
 Exact behavior of each method, including edge cases is described in the [test suite](https://github.com/krzkaczor/edi-tests) (todo).
 
 ## Rationale
 
 We decided to use new, unique prefix `cheat_` to avoid any naming collisions with currently implemented methods. This allows introducing this EIP without breaking backwards compatibility.
-
-@todo: describe reset rationale
-@todo: describe setErc20Balance rationale
 
 ## Backwards Compatibility
 
@@ -129,7 +134,8 @@ An ongoing effort to create a test suite to ensure adherence to the spec is bein
 
 ## Implementation
 
-@todo. Tips on how to implement `cheat_setErc20Balance` trace a balance call to find exact storage location to modify.
+Since Cheatcalls implementation is tight to the underlying node, we don't present any reference implementation. However, here is some advice to implementors:
+* `cheat_setErc20Balance` -- storage location of a balance for a given account can be discovered by tracing storage slots read during a balance call and then finding the exact slot by checking them one by one. Such approach was used to implement `deal` in forge-std ([#1](https://github.com/foundry-rs/forge-std/blob/ee000c6c27859065d7b3da6047345607c1d94a0d/src/StdCheats.sol#L734), [#2](https://github.com/foundry-rs/forge-std/blob/master/src/StdStorage.sol))
 
 ## Security Considerations
 

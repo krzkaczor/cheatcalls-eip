@@ -7,11 +7,11 @@
 ## Abstract
 
 Proposes a standardized set of JSON RPC methods to be implemented by all Ethereum development and testing environments. These methods cover common operations such as setting storage values, manipulating account balances, and interacting with ERC20 tokens. By adopting a consistent naming convention and behavior for these methods, we aim to simplify the development process, enhance code portability, and reduce the cognitive load on developers when working with different tools.
-These new methods are similar to [cheatcodes](https://book.getfoundry.sh/forge/cheatcodes) available in Foundry or Hardhat tests but for JSON RPC calls, hence a name Cheatcalls.
+These new methods are similar to [cheatcodes](https://book.getfoundry.sh/forge/cheatcodes) available in Foundry or Hardhat tests but for JSON RPC calls, hence the name Cheatcalls.
 
 ## Motivation
 
-Currently, Ethereum development and testing tools offer a variety of methods for manipulating the blockchain state during testing. While some methods share the same name across different platforms (e.g., `evm_increaseTime`), their behavior can vary significantly, especially in edge cases. Additionally, many methods are unique to specific tools (e.g., `hardhat_setStorageAt`, `tenderly_setStorageAt`, `tenderly_setErc20Balance`, `buildbear_ERC20Faucet`). Finally, there are often times when some functionality is completely missing from a given node. These inconsistencies create unnecessary complexity for developers and result in vendor lock-in.
+Currently, Ethereum development and testing tools offer a variety of methods for manipulating the blockchain state during testing. While some methods share the same name across different platforms (e.g., `evm_increaseTime`), their behavior can vary significantly, especially in edge cases. Additionally, many methods are unique to specific tools (e.g., `hardhat_setStorageAt`, `tenderly_setStorageAt`, `tenderly_setErc20Balance`, `buildbear_ERC20Faucet`). Finally, often some functionality is completely missing from a given node. These inconsistencies create unnecessary complexity for developers and result in vendor lock-in.
 
 ## Specification
 
@@ -85,7 +85,7 @@ type BytecodeVerification =
   * Returns information about the node and the state of different Cheatcalls.
 * `cheat_setBalance(addr: Address, balanceInWei: Quantity): void`
 * `cheat_setErc20Balance(token: Address, addr: Address, balanceInBaseUnit: Quantity): void`
-  * Balance is in base unit ie. 10^18
+  * Balance is in base unit, i.e., 10^18
   * This is a "best effort implementation". See Implementation section for further description.
 * `cheat_setCode(addr: Address, code: Data): void`
 * `cheat_setNonce(addr: Address, nonce: Quantity): void`
@@ -112,9 +112,9 @@ type BytecodeVerification =
 * `cheat_increaseTime(deltaInSec: Quantity): void`
   * Mines a new block with a timestamp of `lastTimestamp + deltaInSeconds`
 * `cheat_setNextBlockTimestamp(nextTimestamp: Quantity \| null): void`
-  * Does not mine a new block, but once new block is mined, it will have timestamp of exactly `nextTimestamp`. Any methods reading state such as `eth_call` respects new timestamp when queried for 'pending' block. To unset, call with null.
+  * Does not mine a new block, but once new block is mined, it will have timestamp of exactly `nextTimestamp`. Any methods reading state such as `eth_call` respects new timestamp when queried for 'pending' block. To unset, call with `null`.
 * `cheat_snapshot(): Quantity`
-  * Snapshots current state of the blockchain, including Cheatcall related state like `nextBlockTimestamp`. Returned id has to be sequential.
+  * Snapshots current state of the blockchain, including Cheatcall related state like `nextBlockTimestamp`. The returned ID must be sequential.
 * `cheat_revert_snapshot(id: Quantity): void`
   * Replaces `evm_revert`
 
@@ -122,7 +122,9 @@ Exact behavior of each method, including edge cases is described in the [test su
 
 ## Rationale
 
-We decided to use new, unique prefix `cheat_` to avoid any naming collisions with currently implemented methods. This allows introducing this EIP without breaking backwards compatibility.
+We decided to use new, unique prefix `cheat_` to avoid any naming collisions with currently implemented methods.
+
+To simplify overall interface we decided to drop possibility to impersonate a concrete account (`cheat_impersonateAccount`) amd instead use `cheat_impersonateAllAccounts` to impersonate all accounts.
 
 ## Backwards Compatibility
 
@@ -130,7 +132,7 @@ Since we use a new prefix, it's fully backwards compatible.
 
 ## Test Cases
 
-An ongoing effort to create a test suite to ensure adherence to the spec is being tracked in [cheatcalls-eip](https://github.com/krzkaczor/cheatcalls-eip). The test suite is designed in a way that it can also test behaviour compatibility of already existing, legacy methods.
+An ongoing effort to create a test suite to ensure adherence to the specification is being tracked in [cheatcalls-eip](https://github.com/krzkaczor/cheatcalls-eip). The test suite is designed in a way that it can also test behaviour compatibility of already existing, legacy methods.
 
 ## Implementation
 
@@ -139,7 +141,7 @@ Since Cheatcalls implementation is tight to the underlying node, we don't presen
 
 ## Security Considerations
 
-Since using Cheatcalls can be used to make the underlying network unusable, it's recommended to not expose them publicly. For local development nodes such as Hardhat and Anvil this shouldn't be a problem. However, nodes that expose public RPC endpoints such as Tenderly or BuildBear should consider splitting the RPC endpoint into two: public (with standard JSON-RPC methods) and admin (with Cheatcalls).
+Since Cheatcalls can be used to make the underlying network unusable, it's recommended to not expose them publicly. For local development nodes such as Hardhat and Anvil this shouldn't be a problem. However, nodes that expose public RPC endpoints such as Tenderly or BuildBear should consider splitting the RPC endpoint into two: public (with standard JSON-RPC methods) and admin (with Cheatcalls).
 
 ## Copyright Waiver
 

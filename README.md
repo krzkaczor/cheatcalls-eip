@@ -1,70 +1,23 @@
 # Cheatcalls EIP
 
-> [!NOTE]
-> **Work in progress**. Feel free to create issues or PRs.
-
-| eip | title | description | author | type | category | status | created | discussions-to |
-|-----|-------|-------------|--------|------|----------|--------|---------|----------------|
-| eip-xxxx | Standardization of Ethereum Development and Testing Methods | <Description is one full (short) sentence> | Kris Kaczor \<chris@kaczor.io\>, Emmanuel Antony \<emmanuelantony2000@gmail.com\> | Standards Track | Core | Draft | 2024-10-08 | <To be submitted after> |
+| eip | title          | description | author | type | category  | status | created    | discussions-to |
+|-----|----------------|-------------|--------|------|-----------|--------|------------|----------------|
+| eip-xxxx | Cheatcalls EIP | Standardization of Ethereum Development Methods | Kris Kaczor \<chris@kaczor.io\>, Emmanuel Antony \<emmanuelantony2000@gmail.com\> | Standards Track | Interface | Draft | 2024-11-12 | <To be submitted after> |
 
 ## Abstract
 
-Currently, Ethereum development and testing tools offer a variety of methods for manipulating the blockchain state during testing. While some methods share the same name across different platforms (e.g., `evm_increaseTime`), their behavior can vary significantly, especially in edge cases. Additionally, many methods are unique to specific tools (e.g., `hardhat_setStorageAt`, `tenderly_setStorageAt`, `tenderly_setErc20Balance`, `buildbear_ERC20Faucet`). This inconsistency creates unnecessary complexity for developers who work across multiple environments or transition between tools.
-
-This EIP proposes a standardized set of methods to be implemented by all Ethereum development and testing environments. These methods will cover common operations such as setting storage values, manipulating account balances, and interacting with ERC20 tokens. By adopting a consistent naming convention and behavior for these methods, we aim to simplify the development process, enhance code portability, and reduce the cognitive load on developers when working with different tools.
-
-The proposed standard includes methods such as `cheat_setStorage`, `cheat_setBalance`, and `cheat_setERC20Balance`, which will replace their tool-specific counterparts. These new methods are similar to [cheatcodes](https://book.getfoundry.sh/forge/cheatcodes) available in Foundry or Hardhat tests but for JSON RPC calls, hence a name Cheatcalls. This standardization will allow developers to write more portable test suites and development scripts, facilitating easier migration between tools and promoting best practices across the Ethereum development ecosystem.
+Proposes a standardized set of JSON RPC methods to be implemented by all Ethereum development and testing environments. These methods cover common operations such as setting storage values, manipulating account balances, and interacting with ERC20 tokens. By adopting a consistent naming convention and behavior for these methods, we aim to simplify the development process, enhance code portability, and reduce the cognitive load on developers when working with different tools.
+These new methods are similar to [cheatcodes](https://book.getfoundry.sh/forge/cheatcodes) available in Foundry or Hardhat tests but for JSON RPC calls, hence the name Cheatcalls.
 
 ## Motivation
 
-The Ethereum development ecosystem is rich with tools and environments that enable developers to build, test, and deploy smart contracts efficiently. However, the current landscape suffers from a lack of standardization in how these tools manipulate blockchain state during testing and development. This inconsistency creates several challenges:
-
-1. **Reduced Developer Productivity**: Developers working across multiple environments or transitioning between tools must learn and remember different method names and behaviors for essentially the same operations. This cognitive overhead slows down development and increases the likelihood of errors.
-
-2. **Limited Code Portability**: Test suites and development scripts written for one tool often require significant modifications to work with another. This lack of portability hampers collaboration and makes it difficult for projects to leverage the strengths of different tools.
-
-3. **Increased Learning Curve**: Newcomers to Ethereum development face an additional barrier as they must learn tool-specific methods rather than focusing on core concepts and best practices.
-
-4. **Fragmentation of Best Practices**: The divergence in method names and behaviors across tools can lead to the development of tool-specific best practices, rather than ecosystem-wide standards.
-
-5. **Maintenance Burden**: Tool maintainers must implement and document their own versions of common operations, leading to duplication of effort across the ecosystem.
-
-By standardizing these methods, we aim to:
-
-- Simplify the development process by providing a consistent interface across all Ethereum development and testing environments.
-- Enhance code portability, allowing developers to easily switch between tools or use multiple tools in the same project.
-- Reduce the learning curve for new developers by establishing a common vocabulary for blockchain state manipulation.
-- Promote the development of ecosystem-wide best practices.
-- Ease the maintenance burden on tool developers by establishing a clear specification for these common operations.
-
-The comparison table in the specification section highlights the current inconsistencies, with 14 methods specific to Anvil and 2 specific to Hardhat. This proposal seeks to bridge these gaps and create a unified set of methods that can be implemented across all Ethereum development tools, fostering a more cohesive and efficient development ecosystem.
+Currently, Ethereum development and testing tools offer a variety of methods for manipulating the blockchain state during testing. While some methods share the same name across different platforms (e.g., `evm_increaseTime`), their behavior can vary significantly, especially in edge cases. Additionally, many methods are unique to specific tools (e.g., `hardhat_setStorageAt`, `tenderly_setStorageAt`, `tenderly_setErc20Balance`, `buildbear_ERC20Faucet`). Finally, often some functionality is completely missing from a given node. These inconsistencies create unnecessary complexity for developers and result in vendor lock-in.
 
 ## Specification
 
-## Proposed standardized methods
+For a lack of better language, specification is described using TypeScript like type system.
 
-| Method name                        | Signature                                                                      | Comment                                                                                                                                                                                                                                    |
-| ---------------------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| cheat_info                         | <pre>(): NodeInfo </pre>                                                       | Returns semver version of the cheatcalls spec that the node supports. Example "1.0.0".                                                                                                                                                     |
-| cheat_setBalance                   | <pre>(addr: Address, balanceInWei: Quantity): void</pre>                       |                                                                                                                                                                                                                                            |
-| cheat_setErc20Balance              | <pre>(token: Address, addr: Address, balanceInBaseUnit: Quantity): void </pre> | Balance is in base unit ie. 10^18                                                                                                                                                                                                          |
-| cheat_setCode                      | <pre>(addr: Address, code: Data): void </pre>                                  |                                                                                                                                                                                                                                            |
-| cheat_setNonce                     | <pre>(addr: Address, nonce: Quantity): void </pre>                             |                                                                                                                                                                                                                                            |
-| cheat_setStorageAt                 | <pre>(addr: Address, key: Data, value: Quantity): void </pre>                  | Throws if addr is not a contract                                                                                                                                                                                                           |
-| cheat_setCoinbase                  | <pre>(addr: Address): void </pre>                                              |                                                                                                                                                                                                                                            |
-| cheat_setMinGasPrice               | <pre>(priceInWei: Quantity \| null): void </pre>                               | To unset, call with null.                                                                                                                                                                                                                  |
-| cheat_setNextBlockBaseFeePerGas    | <pre>(priceInWei: Quantity \| null): void </pre>                               | To unset, call with null.                                                                                                                                                                                                                  |
-| cheat_setBlockGasLimit             | <pre>(gas: Quantity \| null): void </pre>                                      | `null` means no limit                                                                                                                                                                                                                      |
-| cheat_impersonateAllAccounts       | <pre>(): void </pre>                                                           |                                                                                                                                                                                                                                            |
-| cheat_stopImpersonatingAllAccounts | <pre>(): void </pre>                                                           |                                                                                                                                                                                                                                            |
-| cheat_mine                         | <pre>(blocks: Quantity = 1, gapInSec: Quantity = 1): void </pre>               |                                                                                                                                                                                                                                            |
-| cheat_mining_mode                  | <pre>(mode: InputMiningMode): void </pre>                                      | Sets a mining mode. Explanation follows.                                                                                                                                                                                                   |
-| cheat_dropTransaction              | <pre>(hash: Data): void </pre>                                                 | Drops a tx from a mempool.                                                                                                                                                                                                                 |
-| cheat_increaseTime                 | <pre>(deltaInSec: Quantity): void </pre>                                       | Mines a new block with a timestamp of `lastTimestamp + deltaInSeconds`                                                                                                                                                                     |
-| cheat_setNextBlockTimestamp        | <pre>(nextTimestamp: Quantity \| null): void </pre>                            | Does not mine a new block, but once new block is mined, it will have timestamp of exactly `nextTimestamp`. Any methods reading state such as `eth_call` respects new timestamp when queried for 'pending' block. To unset, call with null. |
-| cheat_snapshot                     | <pre>(): Quantity </pre>                                                       | Snapshots current state of the blockchain, including Cheatcall related state like `nextBlockTimestamp`. Returned id has to be sequential.                                                                                                  |
-| cheat_revert_snapshot              | <pre>(id: Quantity): void </pre>                                               | Replaces `evm_revert`                                                                                                                                                                                                                      |
-| cheat_reset                        | <pre>(mode: InputRunMode): void </pre>                                         | Resets the whole node including snapshots, mempool and any Cheatcalls related state. Can be used to start forking a new network or change chain id.                                                                                        |
+### Type definitions
 
 ```typescript
 // using conventions established in https://ethereum.org/en/developers/docs/apis/json-rpc/#conventions
@@ -126,55 +79,70 @@ type BytecodeVerification =
     };
 ```
 
-### Mining modes
+### JSON RPC Methods
 
-- `auto` (default) - mine txs as soon as they come
-- `manual` - mine by manually calling `cheat_mine`
-- `interval` - mine new blocks at constant intervals
-
-`manual` and `interval` modes have mempools. Transactions can be dropped from a mempool with `cheat_dropTransaction(hash)`.
-
-### Other
+* `cheat_info(): NodeInfo`
+  * Returns information about the node and the state of different Cheatcalls.
+* `cheat_setBalance(addr: Address, balanceInWei: Quantity): void`
+* `cheat_setErc20Balance(token: Address, addr: Address, balanceInBaseUnit: Quantity): void`
+  * Balance is in base unit, i.e., 10^18
+  * This is a "best effort implementation". See Implementation section for further description.
+* `cheat_setCode(addr: Address, code: Data): void`
+* `cheat_setNonce(addr: Address, nonce: Quantity): void`
+* `cheat_setStorageAt(addr: Address, key: Data, value: Quantity): void`
+  * Throws if addr is not a contract
+* `cheat_setCoinbase(addr: Address): void`
+* `cheat_setMinGasPrice(priceInWei: Quantity \| null): void`
+  * To unset, call with `null`.
+* `cheat_setNextBlockBaseFeePerGas(priceInWei: Quantity \| null): void`
+  * To unset, call with `null`.
+* `cheat_setBlockGasLimit(gas: Quantity \| null): void`
+  * `null` means no limit
+* `cheat_impersonateAllAccounts(): void`
+* `cheat_stopImpersonatingAllAccounts(): void`
+* `cheat_mine(blocks: Quantity = 1, gapInSec: Quantity = 1): void`
+* `cheat_mining_mode(mode: InputMiningMode): void`
+  * Sets a mining mode. One of:
+    * `auto` (default) - mine txs as soon as they come
+    * `manual` - mine by manually calling `cheat_mine`
+    * `interval`interval` - mine new blocks at constant intervals
+  * `manual` and `interval` modes have mempool. Transactions can be dropped from a mempool with `cheat_dropTransaction(hash)`.
+* `cheat_dropTransaction(hash: Data): void`
+  * Drops a tx from a mempool.
+* `cheat_increaseTime(deltaInSec: Quantity): void`
+  * Mines a new block with a timestamp of `lastTimestamp + deltaInSeconds`
+* `cheat_setNextBlockTimestamp(nextTimestamp: Quantity \| null): void`
+  * Does not mine a new block, but once new block is mined, it will have timestamp of exactly `nextTimestamp`. Any methods reading state such as `eth_call` respects new timestamp when queried for 'pending' block. To unset, call with `null`.
+* `cheat_snapshot(): Quantity`
+  * Snapshots current state of the blockchain, including Cheatcall related state like `nextBlockTimestamp`. The returned ID must be sequential.
+* `cheat_revert_snapshot(id: Quantity): void`
+  * Replaces `evm_revert`
 
 Exact behavior of each method, including edge cases is described in the [test suite](https://github.com/krzkaczor/edi-tests) (todo).
 
 ## Rationale
 
-We decided to use new, unique prefix `cheat_` to avoid any naming collisions with currently implemented methods. This allows introducing this EIP without breaking backwards compatibility.
+We decided to use new, unique prefix `cheat_` to avoid any naming collisions with currently implemented methods.
 
-We dropped support for impersonating particular accounts in favour of impersonating all accounts with `cheat_impersonateAllAccounts`. We believe it's more convenient to do it like this.
-
-<!--
-  The rationale fleshes out the specification by describing what motivated the design and why particular design decisions were made. It should describe alternate designs that were considered and related work, e.g. how the feature is supported in other languages.
-
-  The current placeholder is acceptable for a draft.
-
-  TODO: Remove this comment before submitting
--->
+To simplify overall interface we decided to drop possibility to impersonate a concrete account (`cheat_impersonateAccount`) amd instead use `cheat_impersonateAllAccounts` to impersonate all accounts.
 
 ## Backwards Compatibility
 
-This EIP doesn't break any existing functionality in existing production grade nodes, eg: Geth, Reth, Nethermind, etc. This EIP however will affect to an extent, and deprecate certain RPCs in test nodes, eg: Hardhat, Anvil, Phoenix (BuildBear), etc. The RPCs that are being deprecated will be replaced by standardized RPCs that have been listed above in the proposal. User scripts, and other dependent tools/plugins might require minor changes, to be compatible.
-
-See [Addendum #1](./addendum1.md) for a comparison table of current implementations.
+Since we use a new prefix, it's fully backwards compatible.
 
 ## Test Cases
 
-[edi-tests](https://github.com/krzkaczor/edi-tests) - Repository testing adherence to the spec.
+An ongoing effort to create a test suite to ensure adherence to the specification is being tracked in [cheatcalls-eip](https://github.com/krzkaczor/cheatcalls-eip). The test suite is designed in a way that it can also test behaviour compatibility of already existing, legacy methods.
 
 ## Implementation
 
-@todo. Tips on how to implement `cheat_setErc20Balance` trace a balance call to find exact storage location to modify.
+Since Cheatcalls implementation is tight to the underlying node, we don't present any reference implementation. However, here is some advice to implementors:
+* `cheat_setErc20Balance` -- storage location of a balance for a given account can be discovered by tracing storage slots read during a balance call and then finding the exact slot by checking them one by one. Such approach was used to implement `deal` in forge-std ([#1](https://github.com/foundry-rs/forge-std/blob/ee000c6c27859065d7b3da6047345607c1d94a0d/src/StdCheats.sol#L734), [#2](https://github.com/foundry-rs/forge-std/blob/master/src/StdStorage.sol))
 
 ## Security Considerations
 
-Todo: explain that cheatcalls should be only available in admin RPCs.
+Since Cheatcalls can be used to make the underlying network unusable, it's recommended to not expose them publicly. For local development nodes such as Hardhat and Anvil this shouldn't be a problem. However, nodes that expose public RPC endpoints such as Tenderly or BuildBear should consider splitting the RPC endpoint into two: public (with standard JSON-RPC methods) and admin (with Cheatcalls).
 
 ## Copyright Waiver
 
 Copyright and related rights waived via [CC0](https://creativecommons.org/publicdomain/zero/1.0/).
-
-# Open questions and details:
-
-- there is no way to impersonate a single account. Is this needed? I found that impersonateAll is much more convenient.
-- maybe cheatcalls should be namespaced? like cheat*gas*{setBlockLimit, setNextBlockBaseFeePerGas}

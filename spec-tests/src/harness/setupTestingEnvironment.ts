@@ -12,6 +12,8 @@ import { privateKeyToAccount } from 'viem/accounts'
 import { foundry } from 'viem/chains'
 import { AnvilNode } from './nodes/AnvilNode'
 import { CheatcallsClient, IForkNode } from './nodes/types'
+import {TenderlyNode} from "./nodes/TenderlyNode";
+import {loadHarnessConfig} from "./config";
 
 interface SetupTestingEnvironmentArgs {
   originForkNetworkChainId: number
@@ -28,7 +30,15 @@ interface TestHarness {
 }
 
 export async function setupTestHarness(args: SetupTestingEnvironmentArgs): Promise<TestHarness> {
-  const forkNode: IForkNode = new AnvilNode()
+  const harnessConfig = loadHarnessConfig()
+
+  const forkNode: IForkNode = harnessConfig.node.mode === 'anvil'
+    ? new AnvilNode({ alchemyApiKey: harnessConfig.node.alchemyApiKey})
+    : new TenderlyNode({
+      account: harnessConfig.node.tenderlyAccount,
+      project: harnessConfig.node.tenderlyProject,
+      apiKey: harnessConfig.node.tenderlyApiKey,
+    })
   await forkNode.start({
     originForkNetworkChainId: args.originForkNetworkChainId,
     forkChainId: args.forkChainId,
@@ -36,16 +46,15 @@ export async function setupTestHarness(args: SetupTestingEnvironmentArgs): Promi
   })
 
   const chain = { ...foundry, id: args.forkChainId }
-  const transport = http(forkNode.url()) // @todo dynamic value
+  const transport = http(forkNode.url())
 
-  const senderAccountPrivateKey = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80' // anvil default #1
-  const sender = privateKeyToAccount(senderAccountPrivateKey)
+
 
   const testClient = forkNode.getCheatcallsClient(chain, transport)
   const walletClient = createWalletClient({
     transport,
     chain,
-    account: sender,
+    account: harnessConfig.sender,
   })
   const publicClient = createPublicClient({
     chain,
@@ -56,7 +65,7 @@ export async function setupTestHarness(args: SetupTestingEnvironmentArgs): Promi
     testClient,
     publicClient,
     walletClient,
-    sender,
+    sender: harnessConfig.sender,
     async [Symbol.asyncDispose]() {
       await forkNode.stop()
     },

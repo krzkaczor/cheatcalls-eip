@@ -32,7 +32,24 @@ jobs:
 
       - run: pnpm check
         working-directory: spec-tests
-      - run: pnpm verify # does linting, type checking, and tests in parallel
+
+      - run: pnpm verify # does linting and type checking in parallel
         working-directory: spec-tests
         env:
           ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+
+      - name: Test Anvil
+        run: pnpm test
+        working-directory: spec-tests
+        env:
+          HARNESS_NODE: anvil
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+
+      - name: Test Tenderly
+        run: pnpm test
+        working-directory: spec-tests
+        env:
+          HARNESS_NODE: tenderly
+          TENDERLY_API_KEY: "${{ secrets.TENDERLY_API_KEY }}"
+          TENDERLY_ACCOUNT: "${{ secrets.TENDERLY_ACCOUNT }}"
+          TENDERLY_PROJECT: "${{ secrets.TENDERLY_PROJECT }}"

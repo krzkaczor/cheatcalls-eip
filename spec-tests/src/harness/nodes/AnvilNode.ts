@@ -12,7 +12,7 @@ export class AnvilNode implements IForkNode {
   constructor(private readonly opts: { alchemyApiKey: string }) {}
 
   async start(forkOptions: ForkOptions): Promise<void> {
-    const forkUrl = originChainIdToRpcUrl(this.opts.alchemyApiKey)[forkOptions.originForkNetworkChainId]
+    const forkUrl = getRpcUrls(this.opts.alchemyApiKey)[forkOptions.originForkNetworkChainId]
     assert(forkUrl, `No RPC URL found for chain ID ${forkOptions.originForkNetworkChainId}`)
 
     this.anvil = createAnvil({
@@ -114,6 +114,8 @@ export class AnvilNode implements IForkNode {
   }
 }
 
-const originChainIdToRpcUrl = (alchemyApiKey: string): Record<number, string | undefined> => ({
-  [mainnet.id]: `https://eth-mainnet.alchemyapi.io/v2/${alchemyApiKey}`,
-})
+function getRpcUrls(alchemyApiKey: string): Record<number, string | undefined> {
+  return {
+    [mainnet.id]: `https://eth-mainnet.alchemyapi.io/v2/${alchemyApiKey}`,
+  }
+}

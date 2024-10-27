@@ -3,7 +3,7 @@ import fetchRetry from 'fetch-retry'
 export const solidFetch = fetchRetry(fetch, {
   retries: 5,
   async retryOn(_attempt, error, response) {
-    const retry = error !== null || (response && response.status >= 500)
+    const retry = error !== null || !!(response && response.status >= 500)
     if (retry) {
       const errorMsg = await response?.text()
       // biome-ignore lint/suspicious/noConsoleLog: debugging

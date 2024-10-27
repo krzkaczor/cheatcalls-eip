@@ -9,7 +9,7 @@
   "scripts": {
     "check": "biome check .",
     "check:fix": "biome check --write --unsafe .",
-    "verify": "concurrently --names \"LINT,TEST,TYPECHECK\" -c \"bgMagenta.bold,bgGreen.bold,bgBlue.bold\" \"pnpm run lint\" \"pnpm run test\" \"pnpm run typecheck\"",
+    "verify": "concurrently --names \"LINT,TYPECHECK\" -c \"bgMagenta.bold,bgBlue.bold\" \"pnpm run lint\" \"pnpm run typecheck\"",
     "lint": "eslint src",
     "test": "node -r dotenv/config --import tsx --test --test-reporter spec \"**/*.test.ts\"",
     "test:only": "node -r dotenv/config --import tsx --test --test-reporter spec --test-only \"**/*.test.ts\"",

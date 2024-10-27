@@ -99,7 +99,7 @@ describe('cheat_setNextBlockTimestamp', () => {
     strictEqual(block.timestamp, expectedTimestamp)
   })
 
-  it('should not allowing setting up a timestamp from the past', async () => {
+  it('should not allow setting up a timestamp from the past', async () => {
     await using harness = await setupTestHarness({
       originForkNetworkChainId: 1,
       forkChainId: 1337,
@@ -109,5 +109,6 @@ describe('cheat_setNextBlockTimestamp', () => {
 
     await rejects(harness.testClient.setNextBlockTimestamp({ timestamp: expectedTimestamp }))
   })
+
   it('should maintain timestamp gap after tx was mined')
 })

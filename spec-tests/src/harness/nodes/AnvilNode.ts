@@ -9,9 +9,7 @@ import { CheatcallsClient, ForkOptions, IForkNode } from './types'
 export class AnvilNode implements IForkNode {
   private anvil: Anvil | undefined
 
-  constructor(private readonly opts: {alchemyApiKey: string}) {
-  }
-
+  constructor(private readonly opts: { alchemyApiKey: string }) {}
 
   async start(forkOptions: ForkOptions): Promise<void> {
     const forkUrl = originChainIdToRpcUrl(this.opts.alchemyApiKey)[forkOptions.originForkNetworkChainId]
@@ -117,5 +115,5 @@ export class AnvilNode implements IForkNode {
 }
 
 const originChainIdToRpcUrl = (alchemyApiKey: string): Record<number, string | undefined> => ({
-  [mainnet.id]: `https://eth-mainnet.alchemyapi.io/v2/${alchemyApiKey}`
+  [mainnet.id]: `https://eth-mainnet.alchemyapi.io/v2/${alchemyApiKey}`,
 })

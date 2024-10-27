@@ -8,12 +8,11 @@ import {
   createPublicClient,
   createWalletClient,
 } from 'viem'
-import { privateKeyToAccount } from 'viem/accounts'
 import { foundry } from 'viem/chains'
+import { loadHarnessConfig } from './config'
 import { AnvilNode } from './nodes/AnvilNode'
+import { TenderlyNode } from './nodes/TenderlyNode'
 import { CheatcallsClient, IForkNode } from './nodes/types'
-import {TenderlyNode} from "./nodes/TenderlyNode";
-import {loadHarnessConfig} from "./config";
 
 interface SetupTestingEnvironmentArgs {
   originForkNetworkChainId: number
@@ -32,13 +31,14 @@ interface TestHarness {
 export async function setupTestHarness(args: SetupTestingEnvironmentArgs): Promise<TestHarness> {
   const harnessConfig = loadHarnessConfig()
 
-  const forkNode: IForkNode = harnessConfig.node.mode === 'anvil'
-    ? new AnvilNode({ alchemyApiKey: harnessConfig.node.alchemyApiKey})
-    : new TenderlyNode({
-      account: harnessConfig.node.tenderlyAccount,
-      project: harnessConfig.node.tenderlyProject,
-      apiKey: harnessConfig.node.tenderlyApiKey,
-    })
+  const forkNode: IForkNode =
+    harnessConfig.node.mode === 'anvil'
+      ? new AnvilNode({ alchemyApiKey: harnessConfig.node.alchemyApiKey })
+      : new TenderlyNode({
+          account: harnessConfig.node.tenderlyAccount,
+          project: harnessConfig.node.tenderlyProject,
+          apiKey: harnessConfig.node.tenderlyApiKey,
+        })
   await forkNode.start({
     originForkNetworkChainId: args.originForkNetworkChainId,
     forkChainId: args.forkChainId,
@@ -47,8 +47,6 @@ export async function setupTestHarness(args: SetupTestingEnvironmentArgs): Promi
 
   const chain = { ...foundry, id: args.forkChainId }
   const transport = http(forkNode.url())
-
-
 
   const testClient = forkNode.getCheatcallsClient(chain, transport)
   const walletClient = createWalletClient({

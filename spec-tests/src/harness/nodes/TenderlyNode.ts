@@ -2,16 +2,18 @@ import assert from 'node:assert'
 import { Address, Chain, Hex, Transport, createClient } from 'viem'
 import { z } from 'zod'
 import { raise } from '../../utils/raise'
+import { solidFetch } from './solidFetch'
 import { CheatcallsClient, ForkOptions, IForkNode } from './types'
-import {solidFetch} from "./solidFetch";
 
 export class TenderlyNode implements IForkNode {
   private rpcUrl: string | undefined
-  constructor(private readonly opts: {
-    account: string
-    project: string
-    apiKey: string
-  }) {
+  constructor(
+    private readonly opts: {
+      account: string
+      project: string
+      apiKey: string
+    },
+  ) {
     assert(this.opts.account, 'Missing Tenderly account')
   }
 
@@ -58,12 +60,10 @@ export class TenderlyNode implements IForkNode {
     const adminRpc = data.rpcs.find((rpc: any) => rpc.name === 'Admin RPC')
     const publicRpc = data.rpcs.find((rpc: any) => rpc.name === 'Public RPC')
     assert(adminRpc && publicRpc, 'Missing admin or public RPC')
-  this.rpcUrl = adminRpc.url
+    this.rpcUrl = adminRpc.url
   }
 
-  async stop(): Promise<void> {
-
-  }
+  async stop(): Promise<void> {}
 
   url(): string {
     if (!this.rpcUrl) {

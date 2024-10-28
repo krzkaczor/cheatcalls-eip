@@ -11,7 +11,7 @@
     "check:fix": "biome check --write --unsafe .",
     "verify": "concurrently --names \"LINT,TYPECHECK\" -c \"bgMagenta.bold,bgBlue.bold\" \"pnpm run lint\" \"pnpm run typecheck\"",
     "lint": "eslint src",
-    "test": "node -r dotenv/config --import tsx --test \"**/*.test.ts\"",
+    "test": "node -r dotenv/config --import tsx --test --test-reporter spec \"**/*.test.ts\"",
     "test:only": "node -r dotenv/config --import tsx --test --test-reporter spec --test-only \"**/*.test.ts\"",
     "typecheck": "tsc --noEmit",
     "fix": "pnpm run check:fix && pnpm run verify"

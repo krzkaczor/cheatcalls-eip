@@ -8,12 +8,15 @@ const blockInfo = {
 }
 
 describe('cheat_setNonce', () => {
-  it('should be able to increase the nonce', async () => {
+  it('should be able to increase the nonce', async (ctx) => {
     await using harness = await setupTestHarness({
       originForkNetworkChainId: 1,
       forkChainId: 1337,
       forkBlockNumber: blockInfo.blockNumber,
     })
+
+    if (harness.skipNotSupported('tenderly', 'Setting nonce is not supported on Tenderly', ctx)) return
+
     const oldNonce = await harness.publicClient.getTransactionCount({
       address: harness.sender.address,
     })

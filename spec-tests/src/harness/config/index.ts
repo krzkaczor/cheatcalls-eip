@@ -1,6 +1,5 @@
 import assert from 'node:assert'
-import { Account } from 'viem'
-import { privateKeyToAccount } from 'viem/accounts'
+import { TestContext } from 'node:test'
 import { getEnv } from './getEnv'
 
 export function loadHarnessConfig(): HarnessConfig {
@@ -23,13 +22,11 @@ export function loadHarnessConfig(): HarnessConfig {
 
   return {
     node,
-    sender: privateKeyToAccount('0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80'), // anvil default #1
   }
 }
 
 interface HarnessConfig {
   node: HarnessNode
-  sender: Account
 }
 
 export type HarnessNode =
@@ -43,3 +40,5 @@ export type HarnessNode =
       tenderlyAccount: string
       tenderlyProject: string
     }
+export type SupportedNodes = HarnessNode['mode']
+

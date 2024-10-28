@@ -7,10 +7,13 @@ import {
   WalletClient,
   createPublicClient,
   createWalletClient,
+  parseEther,
 } from 'viem'
-import { privateKeyToAccount } from 'viem/accounts'
+import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts'
 import { foundry } from 'viem/chains'
+import { loadHarnessConfig } from './config'
 import { AnvilNode } from './nodes/AnvilNode'
+import { TenderlyNode } from './nodes/TenderlyNode'
 import { CheatcallsClient, IForkNode } from './nodes/types'
 
 interface SetupTestingEnvironmentArgs {
@@ -28,18 +31,25 @@ interface TestHarness {
 }
 
 export async function setupTestHarness(args: SetupTestingEnvironmentArgs): Promise<TestHarness> {
-  const forkNode: IForkNode = new AnvilNode()
+  const harnessConfig = loadHarnessConfig()
+
+  const forkNode: IForkNode =
+    harnessConfig.node.mode === 'anvil'
+      ? new AnvilNode({ alchemyApiKey: harnessConfig.node.alchemyApiKey })
+      : new TenderlyNode({
+          account: harnessConfig.node.tenderlyAccount,
+          project: harnessConfig.node.tenderlyProject,
+          apiKey: harnessConfig.node.tenderlyApiKey,
+        })
   await forkNode.start({
     originForkNetworkChainId: args.originForkNetworkChainId,
     forkChainId: args.forkChainId,
     forkBlockNumber: args.forkBlockNumber,
   })
+  const sender = privateKeyToAccount(generatePrivateKey())
 
   const chain = { ...foundry, id: args.forkChainId }
-  const transport = http(forkNode.url()) // @todo dynamic value
-
-  const senderAccountPrivateKey = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80' // anvil default #1
-  const sender = privateKeyToAccount(senderAccountPrivateKey)
+  const transport = http(forkNode.url())
 
   const testClient = forkNode.getCheatcallsClient(chain, transport)
   const walletClient = createWalletClient({
@@ -50,6 +60,11 @@ export async function setupTestHarness(args: SetupTestingEnvironmentArgs): Promi
   const publicClient = createPublicClient({
     chain,
     transport,
+  })
+
+  await testClient.setBalance({
+    address: sender.address,
+    balance: parseEther('100'),
   })
 
   return {

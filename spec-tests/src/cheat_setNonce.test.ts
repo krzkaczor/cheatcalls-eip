@@ -1,5 +1,6 @@
 import { strictEqual } from 'node:assert'
 import { describe, it } from 'node:test'
+import { skipNotSupported } from './harness'
 import { setupTestHarness } from './harness/setupTestingEnvironment'
 
 const blockInfo = {
@@ -8,12 +9,15 @@ const blockInfo = {
 }
 
 describe('cheat_setNonce', () => {
-  it('should be able to increase the nonce', async () => {
+  it('should be able to increase the nonce', async (ctx) => {
+    if (skipNotSupported('tenderly', 'Setting nonce is not supported on Tenderly', ctx)) return
+
     await using harness = await setupTestHarness({
       originForkNetworkChainId: 1,
       forkChainId: 1337,
       forkBlockNumber: blockInfo.blockNumber,
     })
+
     const oldNonce = await harness.publicClient.getTransactionCount({
       address: harness.sender.address,
     })

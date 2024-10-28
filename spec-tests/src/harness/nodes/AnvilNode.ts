@@ -8,8 +8,11 @@ import { CheatcallsClient, ForkOptions, IForkNode } from './types'
 
 export class AnvilNode implements IForkNode {
   private anvil: Anvil | undefined
+
+  constructor(private readonly opts: { alchemyApiKey: string }) {}
+
   async start(forkOptions: ForkOptions): Promise<void> {
-    const forkUrl = originChainIdToRpcUrl[forkOptions.originForkNetworkChainId]
+    const forkUrl = getRpcUrls(this.opts.alchemyApiKey)[forkOptions.originForkNetworkChainId]
     assert(forkUrl, `No RPC URL found for chain ID ${forkOptions.originForkNetworkChainId}`)
 
     this.anvil = createAnvil({
@@ -111,6 +114,8 @@ export class AnvilNode implements IForkNode {
   }
 }
 
-const originChainIdToRpcUrl: Record<number, string | undefined> = {
-  [mainnet.id]: `https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY! ?? raise('ALCHEMY_API_KEY is required')}`,
+function getRpcUrls(alchemyApiKey: string): Record<number, string | undefined> {
+  return {
+    [mainnet.id]: `https://eth-mainnet.alchemyapi.io/v2/${alchemyApiKey}`,
+  }
 }

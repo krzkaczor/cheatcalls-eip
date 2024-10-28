@@ -1,6 +1,7 @@
 import { rejects, strictEqual } from 'node:assert'
 import { describe, it } from 'node:test'
 import { numberToHex } from 'viem'
+import { skipNotSupported } from './harness'
 import { setupTestHarness } from './harness/setupTestingEnvironment'
 
 const blockInfo = {
@@ -176,8 +177,10 @@ describe('cheat_setStorageAt', () => {
     )
   })
 
-  // FIXME: Currently being skipped but should pass (anvil lets you set storage to an EOA)
-  it('should fail to set a valid storage value at a slot for an EOA', { skip: true }, async () => {
+  it('should fail to set a valid storage value at a slot for an EOA', async (ctx) => {
+    if (skipNotSupported('anvil', 'Allows setting storage values of EOAs', ctx)) return
+    if (skipNotSupported('tenderly', 'Allows setting storage values of EOAs', ctx)) return
+
     await using harness = await setupTestHarness({
       originForkNetworkChainId: 1,
       forkChainId: 1337,

@@ -1,5 +1,4 @@
 import assert from 'node:assert'
-import { TestContext } from 'node:test'
 import { getEnv } from './getEnv'
 
 export function loadHarnessConfig(): HarnessConfig {
@@ -41,4 +40,3 @@ export type HarnessNode =
       tenderlyProject: string
     }
 export type SupportedNodes = HarnessNode['mode']
-

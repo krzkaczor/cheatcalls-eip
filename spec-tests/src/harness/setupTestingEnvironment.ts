@@ -11,11 +11,10 @@ import {
 } from 'viem'
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts'
 import { foundry } from 'viem/chains'
-import {loadHarnessConfig, SupportedNodes} from './config'
+import { loadHarnessConfig } from './config'
 import { AnvilNode } from './nodes/AnvilNode'
 import { TenderlyNode } from './nodes/TenderlyNode'
 import { CheatcallsClient, IForkNode } from './nodes/types'
-import {TestContext} from "node:test";
 
 interface SetupTestingEnvironmentArgs {
   originForkNetworkChainId: number
@@ -29,8 +28,6 @@ interface TestHarness {
   walletClient: WalletClient<Transport, Chain, Account>
   sender: Account
   [Symbol.asyncDispose](): Promise<void>
-
-  skipNotSupported(notSupportedNode: SupportedNodes, message: string, ctx: TestContext): boolean
 }
 
 export async function setupTestHarness(args: SetupTestingEnvironmentArgs): Promise<TestHarness> {
@@ -78,14 +75,5 @@ export async function setupTestHarness(args: SetupTestingEnvironmentArgs): Promi
     async [Symbol.asyncDispose]() {
       await forkNode.stop()
     },
-    skipNotSupported: (notSupportedNode, reason, ctx) => {
-      if (harnessConfig.node.mode === notSupportedNode) {
-        ctx.skip(reason)
-        console.warn(`Skipping test because ${notSupportedNode} is not supported, reason: ${reason}`)
-        return true
-      }
-      return false
-    }
-
   }
 }

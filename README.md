@@ -110,7 +110,7 @@ type BytecodeVerification =
   * Sets a mining mode. One of:
     * `auto` (default) - mine txs as soon as they come
     * `manual` - mine by manually calling `cheat_mine`
-    * `interval`interval` - mine new blocks at constant intervals
+    * `interval` - mine new blocks at constant intervals
   * `manual` and `interval` modes have mempool. Transactions can be dropped from a mempool with `cheat_dropTransaction(hash)`.
 * `cheat_dropTransaction(hash: Data): void`
   * Drops a tx from a mempool.

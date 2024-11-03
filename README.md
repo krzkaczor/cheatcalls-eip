@@ -15,7 +15,12 @@ Currently, Ethereum development and testing tools offer a variety of methods for
 
 ## Specification
 
-For a lack of better language, specification is described using TypeScript like type system.
+For a lack of better language, specification is described using TypeScript like type system. Arguments of the function should be passed as `params` in JSON RPC request. Example:
+
+```sh
+curl -X POST --data '{"jsonrpc":"2.0","method":"cheat_setBalance","params":["0x407d73d8a49eeb85d32cf465507dd71d507100c1", "0xDE0B6B3A7640000"],"id":1}'
+```
+
 
 ### Type definitions
 
@@ -105,7 +110,7 @@ type BytecodeVerification =
   * Sets a mining mode. One of:
     * `auto` (default) - mine txs as soon as they come
     * `manual` - mine by manually calling `cheat_mine`
-    * `interval`interval` - mine new blocks at constant intervals
+    * `interval` - mine new blocks at constant intervals
   * `manual` and `interval` modes have mempool. Transactions can be dropped from a mempool with `cheat_dropTransaction(hash)`.
 * `cheat_dropTransaction(hash: Data): void`
   * Drops a tx from a mempool.
@@ -113,18 +118,23 @@ type BytecodeVerification =
   * Mines a new block with a timestamp of `lastTimestamp + deltaInSeconds`
 * `cheat_setNextBlockTimestamp(nextTimestamp: Quantity \| null): void`
   * Does not mine a new block, but once new block is mined, it will have timestamp of exactly `nextTimestamp`. Any methods reading state such as `eth_call` respects new timestamp when queried for 'pending' block. To unset, call with `null`.
-* `cheat_snapshot(): Quantity`
-  * Snapshots current state of the blockchain, including Cheatcall related state like `nextBlockTimestamp`. The returned ID must be sequential.
-* `cheat_revert_snapshot(id: Quantity): void`
-  * Replaces `evm_revert`
+* `cheat_snapshot(): Data`
+  * Snapshots current state of the blockchain, including Cheatcalls related state like `nextBlockTimestamp`. Returned value can be any hex string (number? id?) but has to be unique.
+* `cheat_revert_snapshot(id: Data): boolean`
+  * Replaces `evm_revert`. Returns `true` if snapshot was found and reverted, `false` otherwise. Revert multiple times to the same snapshot MUST be supported.
 
-Exact behavior of each method, including edge cases is described in the [test suite](https://github.com/krzkaczor/edi-tests) (todo).
+Exact behavior of each method, including edge cases is described in the [test suite](https://github.com/krzkaczor/cheatcalls-eip/tree/main/spec-tests) (WIP).
 
 ## Rationale
 
 We decided to use new, unique prefix `cheat_` to avoid any naming collisions with currently implemented methods.
 
 To simplify overall interface we decided to drop possibility to impersonate a concrete account (`cheat_impersonateAccount`) amd instead use `cheat_impersonateAllAccounts` to impersonate all accounts.
+
+### Alternative, client side approach
+
+We realise that creating an industry wide standard is not easy. We are also researching alternative approach of providing a viem cheatcalls client that would
+be a best effort implementation of the EIP and would smooth out some of the incompatibilities between nodes.
 
 ## Backwards Compatibility
 

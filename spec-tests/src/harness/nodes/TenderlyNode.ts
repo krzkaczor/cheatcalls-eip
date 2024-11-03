@@ -19,7 +19,7 @@ export class TenderlyNode implements IForkNode {
 
   async start(forkOptions: ForkOptions): Promise<void> {
     const { forkBlockNumber, originForkNetworkChainId, forkChainId } = forkOptions
-    const uniqueId = new Date().getTime() + Math.floor(Math.random() * 100000)
+    const uniqueId = new Date().getTime().toString() + Math.floor(Math.random() * 100000).toString()
 
     const response = await solidFetch(
       `https://api.tenderly.co/api/v1/account/${this.opts.account}/project/${this.opts.project}/vnets`,

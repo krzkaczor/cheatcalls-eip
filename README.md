@@ -26,53 +26,54 @@ curl -X POST --data '{"jsonrpc":"2.0","method":"cheat_setBalance","params":["0x4
 
 ```typescript
 // using conventions established in https://ethereum.org/en/developers/docs/apis/json-rpc/#conventions
-type Data = string; // Unformatted data ex. 0x004200
-type Address = string; // subset of Data, representing addresses ex. 0x6b175474e89094c44da98b954eedeac495271d0f
-type Quantity = string; // hex numbers ex. 0x400
+type Data = "..."; // Unformatted data ex. 0x004200
+type Address = "..."; // subset of Data, representing addresses ex. 0x6b175474e89094c44da98b954eedeac495271d0f
+type Quantity = "..."; // hex numbers ex. 0x400
 
-interface NodeInfo {
+interface CheatcallsInfo {
   cheatcallsSpecVersion: string;
   bytecodeVerification: BytecodeVerification;
   runMode: RunMode;
   miningMode: MiningMode;
-  impersonateAllStatus: boolean;
-  nextBlockTimestamp: number;
+  impersonateAllEnabled: boolean;
+  nextBlockTimestamp: Quantity;
   minGasPrice: Quantity;
   gasLimit: Quantity;
   nextBlockBaseFeePerGas: Quantity;
 }
 
 type RunMode =
-  | { type: "new"; chainId: number }
+  | { type: "genesis"; chainId: Quantity }
   | {
       type: "fork";
       originRpc: url;
-      blockNumber: number;
-      forkChainId: number;
+      blockNumber: Quantity;
+      forkChainId: Quantity;
     };
 
 type InputRunMode =
-  | { type: "new"; chainId: number }
+  | { type: "new"; chainId: Quantity }
   | {
       type: "fork";
       originRpc: url;
-      blockNumber?: number; // defaults to latest
-      forkChainId?: number; // defaults to origin chain id
+      blockNumber?: Quantity | "latest"; // defaults to latest
+      forkChainId?: Quantity | "origin"; // defaults to origin chain id
     };
 
 type MiningMode =
   | { type: "auto" }
   | { type: "manual"; ordering: MiningOrdering }
-  | { type: "interval"; intervalInSec: Quantity; ordering: MiningOrdering };
+  | { type: "interval"; intervalSeconds: Quantity; ordering: MiningOrdering };
 
 type InputMiningMode =
   | { type: "auto" }
   | { type: "manual"; ordering?: MiningOrdering }
-  | { type: "interval"; intervalInSec: Quantity; ordering?: MiningOrdering };
+  | { type: "interval"; intervalSeconds: Quantity; ordering?: MiningOrdering };
 
 type MiningOrdering =
-  | "fees" // default
-  | "fifo";
+  | "highest-fee-first" // default
+  | "oldest-first"
+  | "random";
 
 type BytecodeVerification =
   | {
@@ -86,27 +87,27 @@ type BytecodeVerification =
 
 ### JSON RPC Methods
 
-* `cheat_info(): NodeInfo`
+* `cheat_info(): CheatcallsInfo`
   * Returns information about the node and the state of different Cheatcalls.
-* `cheat_setBalance(addr: Address, balanceInWei: Quantity): void`
-* `cheat_setErc20Balance(token: Address, addr: Address, balanceInBaseUnit: Quantity): void`
-  * Balance is in base unit, i.e., 10^18
-  * This is a "best effort implementation". See Implementation section for further description.
-* `cheat_setCode(addr: Address, code: Data): void`
-* `cheat_setNonce(addr: Address, nonce: Quantity): void`
-* `cheat_setStorageAt(addr: Address, key: Data, value: Quantity): void`
-  * Throws if addr is not a contract
-* `cheat_setCoinbase(addr: Address): void`
-* `cheat_setMinGasPrice(priceInWei: Quantity \| null): void`
-  * To unset, call with `null`.
-* `cheat_setNextBlockBaseFeePerGas(priceInWei: Quantity \| null): void`
-  * To unset, call with `null`.
-* `cheat_setBlockGasLimit(gas: Quantity \| null): void`
-  * `null` means no limit
+* `cheat_setBalance(account: Address, balance: Quantity): void`
+* `cheat_setErc20Balance(token: Address, account: Address, balanceInBaseUnit: Quantity): void`
+  * Balance is in base unit, i.e., 10^18 means 1 DAI (18 decimals)
+  * This is a "best effort implementation". See `Implementation` section for further description.
+* `cheat_setCode(account: Address, code: Data): void`
+* `cheat_setNonce(account: Address, nonce: Quantity): void`
+* `cheat_setStorageAt(account: Address, slot: Quantity, value: Quantity): void`
+  * Throws if account is not a contract
+* `cheat_setCoinbase(account: Address): void`
+* `cheat_setMinGasPrice(priceInWei: Quantity \| 'default'): void`
+  * To unset, call with `default`.
+* `cheat_setNextBlockBaseFeePerGas(priceInWei: Quantity \| 'default'): void): void`
+  * To unset, call with `default`.
+* `cheat_setBlockGasLimit(gas: Quantity \| 'default'): void`
+  * `0` means no limit
 * `cheat_impersonateAllAccounts(): void`
 * `cheat_stopImpersonatingAllAccounts(): void`
-* `cheat_mine(blocks: Quantity = 1, gapInSec: Quantity = 1): void`
-* `cheat_mining_mode(mode: InputMiningMode): void`
+* `cheat_mine(count: Quantity = 1, gapSeconds: Quantity = 1): void`
+* `cheat_setMiningMode(mode: InputMiningMode): void`
   * Sets a mining mode. One of:
     * `auto` (default) - mine txs as soon as they come
     * `manual` - mine by manually calling `cheat_mine`
@@ -114,14 +115,15 @@ type BytecodeVerification =
   * `manual` and `interval` modes have mempool. Transactions can be dropped from a mempool with `cheat_dropTransaction(hash)`.
 * `cheat_dropTransaction(hash: Data): void`
   * Drops a tx from a mempool.
-* `cheat_increaseTime(deltaInSec: Quantity): void`
+* `cheat_increaseTime(deltaSeconds: Quantity): void`
   * Mines a new block with a timestamp of `lastTimestamp + deltaInSeconds`
-* `cheat_setNextBlockTimestamp(nextTimestamp: Quantity \| null): void`
-  * Does not mine a new block, but once new block is mined, it will have timestamp of exactly `nextTimestamp`. Any methods reading state such as `eth_call` respects new timestamp when queried for 'pending' block. To unset, call with `null`.
+* `cheat_setNextBlockTimestamp(nextTimestamp: Quantity \| 'default'): void`
+  * Does not mine a new block, but once new block is mined, it will have timestamp of exactly `nextTimestamp`. Any methods reading state such as `eth_call` respects new timestamp when queried for 'pending' block.
+  * To unset, call with `default`.
 * `cheat_snapshot(): Data`
   * Snapshots current state of the blockchain, including Cheatcalls related state like `nextBlockTimestamp`. Returned value can be any hex string (number? id?) but has to be unique.
-* `cheat_revert_snapshot(id: Data): boolean`
-  * Replaces `evm_revert`. Returns `true` if snapshot was found and reverted, `false` otherwise. Revert multiple times to the same snapshot MUST be supported.
+* `cheat_revertSnapshot(id: Data)`
+  * Replaces `evm_revert`. Throws if snapshot id was not found. Revert multiple times to the same snapshot MUST be supported.
 
 Exact behavior of each method, including edge cases is described in the [test suite](https://github.com/krzkaczor/cheatcalls-eip/tree/main/spec-tests) (WIP).
 

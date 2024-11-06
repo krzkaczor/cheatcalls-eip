@@ -1,8 +1,8 @@
 # Cheatcalls EIP
 
-| eip | title          | description | author | type | category  | status | created    | discussions-to |
-|-----|----------------|-------------|--------|------|-----------|--------|------------|----------------|
-| eip-xxxx | Cheatcalls EIP | Standardization of Ethereum Development Methods | Kris Kaczor \<chris@kaczor.io\>, Emmanuel Antony \<emmanuelantony2000@gmail.com\> | Standards Track | Interface | Draft | 2024-11-12 | <To be submitted after> |
+| eip | title          | description | author                                                                                        | type | category  | status | created    | discussions-to |
+|-----|----------------|-------------|-----------------------------------------------------------------------------------------------|------|-----------|--------|------------|----------------|
+| eip-xxxx | Cheatcalls EIP | Standardization of Ethereum Development Methods | Kris Kaczor \<chris@kaczor.io\>, Piotr Szlachciak, Emmanuel Antony \<emmanuelantony2000@gmail.com\> | Standards Track | Interface | Draft | 2024-11-12 | <To be submitted after> |
 
 ## Abstract
 

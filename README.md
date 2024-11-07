@@ -148,7 +148,9 @@ Since Cheatcalls implementation is tight to the underlying node, we don't presen
 
 ## Security Considerations
 
-Since Cheatcalls can be used to make the underlying network unusable, it's recommended to not expose them publicly. For local development nodes such as Hardhat and Anvil this shouldn't be a problem. However, nodes that expose public RPC endpoints such as Tenderly or BuildBear should consider splitting the RPC endpoint into two: public (with standard JSON-RPC methods) and admin (with Cheatcalls).
+Careless usage of Cheatcalls can make the network unusable e.g. by changing storage slots of the smart contracts or moving funds out of accounts. Furthermore, it's possible to leak private information such as API keys in `CheatcallsInfo.runMode.originRpc`. This is why we recommend, not exposing Cheatcalls rpc endpoint publicly.
+
+For local development nodes such as Hardhat and Anvil this is not a problem. However, nodes that expose public RPC endpoints such as Tenderly or BuildBear should consider splitting the RPC endpoint into two: public (with standard JSON-RPC methods) and admin (with Cheatcalls).
 
 ## Copyright Waiver
 

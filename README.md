@@ -89,11 +89,11 @@ type MiningOrdering =
 * `cheat_setStorageAt(account: Address, slot: Quantity, value: Quantity): void`
   * Throws if account is not a contract
 * `cheat_setCoinbase(account: Address): void`
-* `cheat_setMinGasPrice(priceInWei: Quantity \| 'default'): void`
+* `cheat_setMinGasPrice(priceInWei: Quantity | 'default'): void`
   * To unset, call with `default`.
-* `cheat_setNextBlockBaseFeePerGas(priceInWei: Quantity \| 'default'): void): void`
+* `cheat_setNextBlockBaseFeePerGas(priceInWei: Quantity | 'default'): void): void`
   * To unset, call with `default`.
-* `cheat_setBlockGasLimit(gas: Quantity \| 'default'): void`
+* `cheat_setBlockGasLimit(gas: Quantity | 'default'): void`
   * `0` means no limit
 * `cheat_impersonateAllAccounts(): void`
 * `cheat_stopImpersonatingAllAccounts(): void`
@@ -108,7 +108,7 @@ type MiningOrdering =
   * Drops a tx from a mempool.
 * `cheat_increaseTime(deltaSeconds: Quantity): void`
   * Mines a new block with a timestamp of `lastTimestamp + deltaSeconds`
-* `cheat_setNextBlockTimestamp(nextTimestamp: Quantity \| 'default'): void`
+* `cheat_setNextBlockTimestamp(nextTimestamp: Quantity | 'default'): void`
   * Does not mine a new block, but once new block is mined, it will have timestamp of exactly `nextTimestamp`. Any methods reading state such as `eth_call` respects new timestamp when queried for 'pending' block.
   * To unset, call with `default`.
 * `cheat_snapshot(): Data`

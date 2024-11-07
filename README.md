@@ -107,7 +107,7 @@ type MiningOrdering =
 * `cheat_dropTransaction(hash: Data): void`
   * Drops a tx from a mempool.
 * `cheat_increaseTime(deltaSeconds: Quantity): void`
-  * Mines a new block with a timestamp of `lastTimestamp + deltaInSeconds`
+  * Mines a new block with a timestamp of `lastTimestamp + deltaSeconds`
 * `cheat_setNextBlockTimestamp(nextTimestamp: Quantity \| 'default'): void`
   * Does not mine a new block, but once new block is mined, it will have timestamp of exactly `nextTimestamp`. Any methods reading state such as `eth_call` respects new timestamp when queried for 'pending' block.
   * To unset, call with `default`.

@@ -32,7 +32,6 @@ type Quantity = "..."; // hex numbers ex. 0x400
 
 interface CheatcallsInfo {
   cheatcallsSpecVersion: string;
-  bytecodeVerification: BytecodeVerification;
   runMode: RunMode;
   miningMode: MiningMode;
   impersonateAllEnabled: boolean;
@@ -74,21 +73,13 @@ type MiningOrdering =
   | "highest-fee-first" // default
   | "oldest-first"
   | "random";
-
-type BytecodeVerification =
-  | {
-      type: "not-supported";
-    }
-  | {
-      type: "etherscan-like";
-      url: string;
-    };
 ```
 
 ### JSON RPC Methods
 
 * `cheat_info(): CheatcallsInfo`
   * Returns information about the node and the state of different Cheatcalls.
+  * `cheatcallsSpecVersion` should return `1.0.0` when node fully implements this EIP.
 * `cheat_setBalance(account: Address, balance: Quantity): void`
 * `cheat_setErc20Balance(token: Address, account: Address, balanceInBaseUnit: Quantity): void`
   * Balance is in base unit, i.e., 10^18 means 1 DAI (18 decimals)
@@ -133,6 +124,8 @@ We decided to use new, unique prefix `cheat_` to avoid any naming collisions wit
 
 To simplify overall interface we decided to drop possibility to impersonate a concrete account (`cheat_impersonateAccount`) amd instead use `cheat_impersonateAllAccounts` to impersonate all accounts.
 
+`cheat_info` might be a good place to return instructions for automated contract code verification but at the moment we decided to remove it to keep this EIP simple.
+
 ### Alternative, client side approach
 
 We realise that creating an industry wide standard is not easy. We are also researching alternative approach of providing a viem cheatcalls client that would
@@ -141,6 +134,8 @@ be a best effort implementation of the EIP and would smooth out some of the inco
 ## Backwards Compatibility
 
 Since we use a new prefix, it's fully backwards compatible.
+
+Further extensions and iterations on this spec should follow semantic versioning. `CheatcallsInfo.cheatcallsSpecVersion` should be changed appropriately.
 
 ## Test Cases
 
